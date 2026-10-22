@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Task Manager - Quản lý công việc sinh viên</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="toast" class="toast" data-testid="toast" role="alert"></div>
+
+  <!-- AUTH VIEW: Màn hình Đăng nhập -->
+  <section id="auth-view" class="view-container auth-container" data-testid="auth-view">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-icon">🎓</div>
+        <h1>Student Task Manager</h1>
+        <p class="subtitle">Hệ thống quản lý bài tập & nhiệm vụ học tập</p>
+      </div>
+
+      <form id="login-form" data-testid="form-login" novalidate>
+        <div id="auth-error" class="alert alert-danger hidden" data-testid="auth-error" role="alert"></div>
+
+        <div class="form-group">
+          <label for="username">Tên đăng nhập</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            data-testid="input-username"
+            placeholder="Ví dụ: student1" 
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            data-testid="input-password"
+            placeholder="Nhập mật khẩu (ví dụ: 123456)" 
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button type="submit" id="login-btn" class="btn btn-primary btn-block" data-testid="btn-login">
+          Đăng nhập
+        </button>
+
+        <div class="demo-accounts-box">
+          <p><strong>Tài khoản Demo thử nghiệm:</strong></p>
+          <ul>
+            <li><code>student1</code> / <code>123456</code> (Sinh viên: Nguyễn Văn Tuấn)</li>
+            <li><code>student2</code> / <code>123456</code> (Sinh viên: Trần Thị Mai)</li>
+            <li><code>admin</code> / <code>admin123</code> (Quản trị viên / Giảng viên)</li>
+          </ul>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- DASHBOARD VIEW: Màn hình Quản lý Task -->
+  <section id="dashboard-view" class="view-container dashboard-container hidden" data-testid="dashboard-view">
+    <!-- Navbar Header -->
+    <header class="navbar">
+      <div class="navbar-brand">
+        <span class="logo-icon-sm">🎓</span>
+        <h2>Student Task Manager</h2>
+      </div>
+      <div class="navbar-user">
+        <div class="user-info">
+          <span class="avatar-badge">👨‍🎓</span>
+          <span id="user-greeting" class="user-greeting" data-testid="user-greeting">Xin chào, Sinh viên</span>
+        </div>
+        <button id="logout-btn" class="btn btn-outline-danger" data-testid="btn-logout" title="Đăng xuất khỏi hệ thống">
+          🚪 Đăng xuất
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-main">
+      <!-- Quick Stats Cards -->
+      <section class="stats-row" aria-label="Thống kê công việc">
+        <div class="stat-card stat-total">
+          <div class="stat-icon">📋</div>
+          <div class="stat-details">
+            <span class="stat-label">Tổng nhiệm vụ</span>
+            <span id="stat-total" class="stat-number" data-testid="stat-total">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-pending">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-details">
+            <span class="stat-label">Đang chờ xử lý</span>
+            <span id="stat-pending" class="stat-number" data-testid="stat-pending">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-completed">
+          <div class="stat-icon">✅</div>
+          <div class="stat-details">
+            <span class="stat-label">Đã hoàn thành</span>
+            <span id="stat-completed" class="stat-number" data-testid="stat-completed">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-high">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-details">
+            <span class="stat-label">Độ ưu tiên cao</span>
+            <span id="stat-high" class="stat-number" data-testid="stat-high">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grid: Left (Add Task Form) - Right (Task List & Filters) -->
+      <div class="content-grid">
+        <!-- Card: Thêm nhiệm vụ mới -->
+        <section class="card add-task-card">
+          <div class="card-header">
+            <h3>➕ Thêm nhiệm vụ mới</h3>
+          </div>
+          <div class="card-body">
+            <form id="task-form" data-testid="form-add-task" novalidate>
+              <div id="task-form-error" class="alert alert-danger hidden" data-testid="task-form-error" role="alert"></div>
+
+              <div class="form-group">
+                <label for="task-title">Tên nhiệm vụ <span class="required">*</span></label>
+                <input 
+                  type="text" 
+                  id="task-title" 
+                  name="taskTitle"
+                  data-testid="input-task-title"
+                  placeholder="Ví dụ: Làm bài tập lớn môn Lập trình Web"
+                  required
+                >
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label for="task-subject">Môn học</label>
+                  <select id="task-subject" name="taskSubject" data-testid="select-task-subject">
+                    <option value="Lập trình Web">Lập trình Web</option>
+                    <option value="Cấu trúc dữ liệu & Giải thuật">Cấu trúc dữ liệu & Giải thuật</option>
+                    <option value="Cơ sở dữ liệu">Cơ sở dữ liệu</option>
+                    <option value="Trí tuệ nhân tạo">Trí tuệ nhân tạo</option>
+                    <option value="Kiểm thử phần mềm">Kiểm thử phần mềm</option>
+                    <option value="Tiếng Anh chuyên ngành">Tiếng Anh chuyên ngành</option>
+                    <option value="Khác">Môn học khác</option>
+                  </select>
+                </div>
+
+                <div class="form-group col">
+                  <label for="task-priority">Độ ưu tiên</label>
+                  <select id="task-priority" name="taskPriority" data-testid="select-task-priority">
+                    <option value="medium">Trung bình</option>
+                    <option value="high">Cao</option>
+                    <option value="low">Thấp</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="task-due-date">Hạn nộp</label>
+                <input 
+                  type="date" 
+                  id="task-due-date" 
+                  name="taskDueDate"
+                  data-testid="input-task-due-date"
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="task-desc">Ghi chú chi tiết</label>
+                <textarea 
+                  id="task-desc" 
+                  name="taskDesc"
+                  data-testid="input-task-desc"
+                  rows="3" 
+                  placeholder="Ghi chú yêu cầu, tài liệu tham khảo hoặc link nộp bài..."
+                ></textarea>
+              </div>
+
+              <button type="submit" id="btn-add-task" class="btn btn-primary btn-block" data-testid="btn-add-task">
+                Lưu nhiệm vụ
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Card: Danh sách nhiệm vụ -->
+        <section class="card task-list-card">
+          <div class="card-header task-list-header">
+            <h3>📑 Danh sách nhiệm vụ học tập</h3>
+            <span id="task-count-badge" class="badge badge-info" data-testid="task-count-badge">0 nhiệm vụ</span>
+          </div>
+
+          <!-- Bộ lọc & Tìm kiếm -->
+          <div class="filter-bar">
+            <div class="search-box">
+              <input 
+                type="text" 
+                id="search-input" 
+                data-testid="input-search"
+                placeholder="🔍 Tìm kiếm theo tên hoặc môn học..."
+              >
+            </div>
+            <div class="filter-controls">
+              <select id="filter-status" data-testid="select-filter-status" aria-label="Lọc theo trạng thái">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="pending">Đang chờ</option>
+                <option value="completed">Đã hoàn thành</option>
+              </select>
+
+              <select id="filter-priority" data-testid="select-filter-priority" aria-label="Lọc theo độ ưu tiên">
+                <option value="all">Tất cả độ ưu tiên</option>
+                <option value="high">Độ ưu tiên Cao</option>
+                <option value="medium">Độ ưu tiên Trung bình</option>
+                <option value="low">Độ ưu tiên Thấp</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Danh sách task -->
+          <div class="card-body">
+            <div id="task-list" class="task-list" data-testid="task-list">
+              <!-- Render động qua JavaScript -->
+            </div>
+
+            <div id="empty-state" class="empty-state hidden" data-testid="empty-state">
+              <div class="empty-icon">📭</div>
+              <h4>Không tìm thấy nhiệm vụ nào</h4>
+              <p>Hãy thêm nhiệm vụ mới hoặc thay đổi bộ lọc tìm kiếm của bạn.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <!-- ADMIN DASHBOARD VIEW: Màn hình Quản trị dành cho Giảng viên / Admin -->
+  <section id="admin-dashboard-view" class="view-container admin-dashboard-container hidden" data-testid="admin-dashboard-view">
+    <!-- Navbar Header Admin -->
+    <header class="navbar navbar-admin">
+      <div class="navbar-brand">
+        <span class="logo-icon-sm">🛡️</span>
+        <h2>Student Task Manager <span class="badge badge-admin-role">Admin Portal</span></h2>
+      </div>
+      <div class="navbar-user">
+        <div class="user-info">
+          <span class="avatar-badge avatar-admin">👨‍🏫</span>
+          <span id="admin-greeting" class="user-greeting" data-testid="admin-greeting">Xin chào, Quản trị viên</span>
+        </div>
+        <button id="admin-logout-btn" class="btn btn-outline-danger" data-testid="btn-admin-logout" title="Đăng xuất khỏi hệ thống">
+          🚪 Đăng xuất
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area Admin -->
+    <main class="dashboard-main">
+      <div class="admin-notice-banner" role="note">
+        <span>ℹ️ <strong>Chế độ Quản trị viên (Phân quyền Mô phỏng Frontend):</strong> Dữ liệu sinh viên và bài tập được tổng hợp từ kho lưu trữ <code>localStorage</code> để phục vụ kiểm thử và demo giao diện.</span>
+      </div>
+
+      <!-- Quick Stats Cards Hệ thống -->
+      <section class="stats-row" aria-label="Thống kê tổng quan hệ thống">
+        <div class="stat-card stat-total">
+          <div class="stat-icon">👥</div>
+          <div class="stat-details">
+            <span class="stat-label">Tổng sinh viên</span>
+            <span id="admin-stat-students" class="stat-number" data-testid="admin-stat-students">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-pending">
+          <div class="stat-icon">📋</div>
+          <div class="stat-details">
+            <span class="stat-label">Tổng nhiệm vụ hệ thống</span>
+            <span id="admin-stat-total-tasks" class="stat-number" data-testid="admin-stat-total-tasks">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-completed">
+          <div class="stat-icon">✅</div>
+          <div class="stat-details">
+            <span class="stat-label">Nhiệm vụ đã hoàn thành</span>
+            <span id="admin-stat-completed-tasks" class="stat-number" data-testid="admin-stat-completed-tasks">0</span>
+          </div>
+        </div>
+
+        <div class="stat-card stat-high">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-details">
+            <span class="stat-label">Nhiệm vụ đang chờ</span>
+            <span id="admin-stat-pending-tasks" class="stat-number" data-testid="admin-stat-pending-tasks">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content Grid: Cột trái (Danh sách sinh viên) - Cột phải (Chi tiết bài tập của sinh viên được chọn) -->
+      <div class="content-grid admin-grid">
+        <!-- Card: Danh sách Sinh viên -->
+        <section class="card admin-students-card">
+          <div class="card-header">
+            <h3>👨‍🎓 Danh sách Sinh viên</h3>
+            <span id="admin-student-count-badge" class="badge badge-info" data-testid="admin-student-count-badge">0 sinh viên</span>
+          </div>
+          <div class="card-body">
+            <div id="admin-student-list" class="admin-student-list" data-testid="admin-student-list">
+              <!-- Render động sinh viên -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Card: Chi tiết nhiệm vụ của sinh viên -->
+        <section class="card admin-student-tasks-card">
+          <div class="card-header task-list-header">
+            <div>
+              <h3>📑 Nhiệm vụ của: <span id="admin-selected-student-name" class="highlight-student" data-testid="admin-selected-student-name">Sinh viên</span></h3>
+              <p class="subtitle-sm" id="admin-selected-student-meta">Username: student1</p>
+            </div>
+            <span id="admin-student-task-badge" class="badge badge-primary" data-testid="admin-student-task-badge">0 nhiệm vụ</span>
+          </div>
+
+          <!-- Bộ lọc trạng thái nhiệm vụ của sinh viên -->
+          <div class="filter-bar">
+            <div class="filter-controls">
+              <select id="admin-filter-status" data-testid="admin-filter-status" aria-label="Lọc theo trạng thái bài tập">
+                <option value="all">Tất cả bài tập</option>
+                <option value="pending">Đang chờ xử lý</option>
+                <option value="completed">Đã hoàn thành</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div id="admin-task-list" class="task-list" data-testid="admin-task-list">
+              <!-- Render động nhiệm vụ của sinh viên được chọn -->
+            </div>
+
+            <div id="admin-empty-tasks" class="empty-state hidden" data-testid="admin-empty-tasks">
+              <div class="empty-icon">📭</div>
+              <h4>Sinh viên chưa có nhiệm vụ nào</h4>
+              <p>Chưa có bài tập nào phù hợp với bộ lọc hiện tại.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

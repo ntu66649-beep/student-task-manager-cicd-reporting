@@ -1,0 +1,37 @@
+{
+  "name": "student-task-manager-cicd-reporting",
+  "version": "1.0.0",
+  "description": "Student Task Manager with Playwright E2E Testing, Allure Reporting, and GitHub Actions CI/CD Pipeline",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report",
+    "allure:serve": "allure serve allure-results",
+    "report:all": "npm run allure:generate && npm run test:report",
+    "demo": "node demo.js",
+    "demo:pass": "node demo.js",
+    "demo:fail": "node demo-failure.js",
+    "clean": "node -e \"const fs = require('fs'); ['allure-results', 'allure-report', 'playwright-report', 'test-results'].forEach(d => { if (fs.existsSync(d)) fs.rmSync(d, { recursive: true, force: true }); }); console.log('All reports and artifacts cleaned successfully.');\""
+  },
+  "keywords": [
+    "playwright",
+    "e2e-testing",
+    "github-actions",
+    "allure-report",
+    "ci-cd",
+    "software-testing",
+    "swt301"
+  ],
+  "author": "SWT301 - Student Task Manager Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "allure-commandline": "^2.32.0",
+    "allure-playwright": "^3.14.0"
+  }
+}

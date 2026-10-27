@@ -77,6 +77,7 @@ function ensureMockDataForAdmin() {
 let currentUser = null;
 let tasks = [];
 let toastTimeout = null;
+let editingTaskId = null;
 
 // --- DOM ELEMENTS ---
 const authView = document.getElementById('auth-view');
@@ -102,6 +103,10 @@ const filterPrioritySelect = document.getElementById('filter-priority');
 const taskListContainer = document.getElementById('task-list');
 const emptyState = document.getElementById('empty-state');
 const taskCountBadge = document.getElementById('task-count-badge');
+const sortTasksSelect = document.getElementById('sort-tasks');
+const cancelEditBtn = document.getElementById('btn-cancel-edit');
+const taskFormHeading = document.getElementById('task-form-heading');
+const saveTaskBtn = document.getElementById('btn-add-task');
 
 const statTotal = document.getElementById('stat-total');
 const statPending = document.getElementById('stat-pending');
@@ -169,8 +174,39 @@ function getTodayDateString() {
 
 function initDueDateMin() {
   if (taskDueDateInput) {
-    taskDueDateInput.min = getTodayDateString();
+    const existingTask = tasks.find(task => task.id === editingTaskId);
+    // Keep the existing deadline when editing an overdue task.
+    taskDueDateInput.min = existingTask?.dueDate && existingTask.dueDate < getTodayDateString()
+      ? existingTask.dueDate : getTodayDateString();
   }
+}
+
+function getDefaultTasks(username) {
+  const defaults = username === 'student2' ? DEFAULT_STUDENT2_TASKS : DEFAULT_SAMPLE_TASKS;
+  return JSON.parse(JSON.stringify(defaults));
+}
+
+function isOverdue(task) {
+  return !task.completed && !!task.dueDate && task.dueDate < getTodayDateString();
+}
+
+function resetTaskForm() {
+  editingTaskId = null;
+  taskForm.reset();
+  taskPrioritySelect.value = 'medium';
+  taskFormHeading.textContent = 'Thêm nhiệm vụ mới';
+  saveTaskBtn.textContent = 'Lưu nhiệm vụ';
+  cancelEditBtn.classList.add('hidden');
+  taskFormError.classList.add('hidden');
+  taskFormError.textContent = '';
+  initDueDateMin();
+}
+
+function resetFilters() {
+  searchInput.value = '';
+  filterStatusSelect.value = 'all';
+  filterPrioritySelect.value = 'all';
+  sortTasksSelect.value = 'newest';
 }
 
 // --- LOCAL STORAGE HELPERS ---
@@ -186,11 +222,11 @@ function loadTasks() {
     try {
       tasks = JSON.parse(data);
     } catch (e) {
-      tasks = [...DEFAULT_SAMPLE_TASKS];
+      tasks = getDefaultTasks(currentUser.username);
     }
   } else {
     // Initial tasks for newly logged in account
-    tasks = JSON.parse(JSON.stringify(DEFAULT_SAMPLE_TASKS));
+    tasks = getDefaultTasks(currentUser.username);
     saveTasks();
   }
 }
@@ -212,6 +248,11 @@ function updateStats() {
   statCompleted.textContent = completed;
   statPending.textContent = pending;
   statHigh.textContent = highPriority;
+  document.getElementById('stat-overdue').textContent = tasks.filter(isOverdue).length;
+  const percent = total ? Math.round(completed / total * 100) : 0;
+  document.getElementById('progress-label').textContent = `${completed}/${total} nhiệm vụ hoàn thành`;
+  document.getElementById('progress-percent').textContent = `${percent}%`;
+  document.getElementById('task-progress').value = percent;
 }
 
 function renderTasks() {
@@ -229,6 +270,7 @@ function renderTasks() {
     let matchesStatus = true;
     if (statusFilter === 'pending') matchesStatus = !task.completed;
     if (statusFilter === 'completed') matchesStatus = task.completed;
+    if (statusFilter === 'overdue') matchesStatus = isOverdue(task);
 
     // Priority filter match
     let matchesPriority = true;
@@ -237,6 +279,12 @@ function renderTasks() {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  if (sortTasksSelect.value === 'due-date') {
+    filteredTasks.sort((a, b) => (a.dueDate || '9999').localeCompare(b.dueDate || '9999'));
+  } else if (sortTasksSelect.value === 'priority') {
+    filteredTasks.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  }
   taskCountBadge.textContent = `${filteredTasks.length} nhiệm vụ`;
 
   if (filteredTasks.length === 0) {
@@ -248,7 +296,7 @@ function renderTasks() {
       const isCompleted = task.completed;
       return `
         <article 
-          class="task-item priority-${task.priority} ${isCompleted ? 'completed' : ''}" 
+          class="task-item priority-${task.priority} ${isCompleted ? 'completed' : ''} ${isOverdue(task) ? 'overdue' : ''}"
           data-testid="task-item" 
           data-task-id="${task.id}"
         >
@@ -258,6 +306,7 @@ function renderTasks() {
                 type="button" 
                 class="task-checkbox-btn" 
                 data-testid="btn-toggle-task" 
+                aria-pressed="${isCompleted}"
                 aria-label="${isCompleted ? 'Đánh dấu chưa hoàn thành' : 'Đánh dấu đã hoàn thành'}"
                 onclick="handleToggleTask('${task.id}')"
               >
@@ -276,11 +325,14 @@ function renderTasks() {
                     ${isCompleted ? '✅ Đã hoàn thành' : '⏳ Đang chờ'}
                   </span>
                   ${task.dueDate ? `<span class="task-date" data-testid="task-item-date">📅 Hạn: ${task.dueDate}</span>` : ''}
+                  ${isOverdue(task) ? '<span class="badge badge-overdue" data-testid="task-overdue">Quá hạn</span>' : ''}
                 </div>
               </div>
             </div>
 
             <div class="task-actions">
+              <button type="button" class="btn-action-edit" data-testid="btn-edit-task"
+                aria-label="Sửa nhiệm vụ" onclick="handleEditTask('${task.id}')">Sửa</button>
               <button 
                 type="button" 
                 class="btn-action-delete" 
@@ -347,6 +399,10 @@ function handleLogin(e) {
   currentUser = { username: foundUser.username, name: foundUser.name, role: foundUser.role };
   localStorage.setItem('student_current_user', JSON.stringify(currentUser));
   loginForm.reset();
+  resetFilters();
+  resetTaskForm();
+  selectedStudentUsername = 'student1';
+  adminFilterStatus.value = 'all';
 
   if (currentUser.role === 'admin') {
     ensureMockDataForAdmin();
@@ -364,6 +420,8 @@ function handleLogin(e) {
 }
 
 function handleLogout() {
+  resetTaskForm();
+  resetFilters();
   currentUser = null;
   tasks = [];
   localStorage.removeItem('student_current_user');
@@ -394,7 +452,8 @@ function handleAddTask(e) {
   // Validation: Deadline cannot be in the past
   if (dueDate) {
     const todayStr = getTodayDateString();
-    if (dueDate < todayStr) {
+    const existingTask = tasks.find(task => task.id === editingTaskId);
+    if (dueDate < todayStr && dueDate !== existingTask?.dueDate) {
       taskFormError.textContent = 'Hạn nộp không được ở trong quá khứ! Vui lòng chọn ngày hôm nay hoặc tương lai.';
       taskFormError.classList.remove('hidden');
       taskDueDateInput.focus();
@@ -402,27 +461,46 @@ function handleAddTask(e) {
     }
   }
 
+  const existingTask = tasks.find(task => task.id === editingTaskId);
   const newTask = {
-    id: 'task_' + Date.now(),
+    id: existingTask?.id || 'task_' + crypto.randomUUID(),
     title: title,
     subject: subject,
     priority: priority,
     dueDate: dueDate,
     desc: desc,
-    completed: false,
-    createdAt: new Date().toISOString()
+    completed: existingTask?.completed || false,
+    createdAt: existingTask?.createdAt || new Date().toISOString()
   };
 
-  tasks.unshift(newTask);
+  if (existingTask) {
+    tasks[tasks.indexOf(existingTask)] = newTask;
+  } else {
+    tasks.unshift(newTask);
+  }
   saveTasks();
-  taskForm.reset();
-  // Keep default priority to medium and reset min date
-  taskPrioritySelect.value = 'medium';
-  initDueDateMin();
+  resetTaskForm();
 
   renderTasks();
-  showToast('Thêm nhiệm vụ mới thành công!', 'success');
+  showToast(existingTask ? 'Cập nhật nhiệm vụ thành công!' : 'Thêm nhiệm vụ mới thành công!', 'success');
 }
+
+window.handleEditTask = function(taskId) {
+  const task = tasks.find(item => item.id === taskId);
+  if (!task) return;
+  editingTaskId = task.id;
+  taskTitleInput.value = task.title;
+  taskSubjectSelect.value = task.subject;
+  taskPrioritySelect.value = task.priority;
+  taskDueDateInput.value = task.dueDate;
+  taskDescInput.value = task.desc;
+  taskFormHeading.textContent = 'Chỉnh sửa nhiệm vụ';
+  saveTaskBtn.textContent = 'Lưu thay đổi';
+  cancelEditBtn.classList.remove('hidden');
+  taskFormError.classList.add('hidden');
+  initDueDateMin();
+  taskTitleInput.focus();
+};
 
 window.handleToggleTask = function(taskId) {
   const task = tasks.find(t => t.id === taskId);
@@ -441,6 +519,7 @@ window.handleDeleteTask = function(taskId) {
   if (index === -1) return;
 
   const deletedTask = tasks.splice(index, 1)[0];
+  if (editingTaskId === taskId) resetTaskForm();
   saveTasks();
   renderTasks();
   showToast(`Đã xóa nhiệm vụ "${deletedTask.title}"!`, 'info');
@@ -608,6 +687,12 @@ taskForm.addEventListener('submit', handleAddTask);
 searchInput.addEventListener('input', renderTasks);
 filterStatusSelect.addEventListener('change', renderTasks);
 filterPrioritySelect.addEventListener('change', renderTasks);
+sortTasksSelect.addEventListener('change', renderTasks);
+cancelEditBtn.addEventListener('click', resetTaskForm);
+document.getElementById('btn-reset-filters').addEventListener('click', () => {
+  resetFilters();
+  renderTasks();
+});
 if (adminFilterStatus) adminFilterStatus.addEventListener('change', renderAdminSelectedStudentTasks);
 
 // --- INITIALIZATION ---

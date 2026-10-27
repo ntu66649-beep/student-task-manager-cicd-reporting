@@ -1,5 +1,6 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
+const baseURL = `http://127.0.0.1:${process.env.PORT || 3000}`;
 
 /**
  * Playwright Test Configuration for Student Task Manager - CI/CD & Reporting
@@ -33,7 +34,7 @@ module.exports = defineConfig({
   /* Shared settings for all test projects */
   use: {
     /* Base URL for relative page.goto() navigation */
-    baseURL: 'http://localhost:3000',
+    baseURL,
 
     /* Collect traces, screenshots and videos for debugging failed tests */
     trace: 'retain-on-failure',
@@ -52,7 +53,7 @@ module.exports = defineConfig({
   /* Run local dev web server automatically before starting tests */
   webServer: {
     command: 'node server.js',
-    url: 'http://localhost:3000',
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 15 * 1000
   }

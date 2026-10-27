@@ -13,6 +13,7 @@
   <section id="auth-view" class="view-container auth-container" data-testid="auth-view">
     <div class="auth-card">
       <div class="auth-header">
+        <span class="eyebrow">Góc học tập của bạn</span>
         <div class="logo-icon">🎓</div>
         <h1>Student Task Manager</h1>
         <p class="subtitle">Hệ thống quản lý bài tập & nhiệm vụ học tập</p>
@@ -84,8 +85,16 @@
 
     <!-- Main Content Area -->
     <main class="dashboard-main">
+      <section class="dashboard-intro">
+        <div><p class="eyebrow">Không gian học tập</p><h1>Chủ động mỗi ngày.</h1>
+          <p class="subtitle">Sắp xếp bài tập, theo dõi hạn nộp và hoàn thành từng mục tiêu.</p></div>
+        <div class="progress-summary">
+          <div class="progress-caption"><label id="progress-label" for="task-progress">0/0 nhiệm vụ hoàn thành</label><strong id="progress-percent">0%</strong></div>
+          <progress id="task-progress" max="100" value="0" aria-label="Tiến độ hoàn thành nhiệm vụ"></progress>
+        </div>
+      </section>
       <!-- Quick Stats Cards -->
-      <section class="stats-row" aria-label="Thống kê công việc">
+      <section class="stats-row student-stats" aria-label="Thống kê công việc">
         <div class="stat-card stat-total">
           <div class="stat-icon">📋</div>
           <div class="stat-details">
@@ -117,6 +126,11 @@
             <span id="stat-high" class="stat-number" data-testid="stat-high">0</span>
           </div>
         </div>
+        <div class="stat-card stat-overdue">
+          <div class="stat-icon">📅</div>
+          <div class="stat-details"><span class="stat-label">Đã quá hạn</span>
+            <span id="stat-overdue" class="stat-number" data-testid="stat-overdue">0</span></div>
+        </div>
       </section>
 
       <!-- Grid: Left (Add Task Form) - Right (Task List & Filters) -->
@@ -124,7 +138,8 @@
         <!-- Card: Thêm nhiệm vụ mới -->
         <section class="card add-task-card">
           <div class="card-header">
-            <h3>➕ Thêm nhiệm vụ mới</h3>
+            <h3 id="task-form-heading">Thêm nhiệm vụ mới</h3>
+            <span class="section-marker" aria-hidden="true">＋</span>
           </div>
           <div class="card-body">
             <form id="task-form" data-testid="form-add-task" novalidate>
@@ -190,6 +205,7 @@
               <button type="submit" id="btn-add-task" class="btn btn-primary btn-block" data-testid="btn-add-task">
                 Lưu nhiệm vụ
               </button>
+              <button type="button" id="btn-cancel-edit" class="btn btn-secondary btn-block hidden" data-testid="btn-cancel-edit">Hủy chỉnh sửa</button>
             </form>
           </div>
         </section>
@@ -207,6 +223,7 @@
               <input 
                 type="text" 
                 id="search-input" 
+                aria-label="Tìm kiếm nhiệm vụ theo tên hoặc môn học"
                 data-testid="input-search"
                 placeholder="🔍 Tìm kiếm theo tên hoặc môn học..."
               >
@@ -216,6 +233,7 @@
                 <option value="all">Tất cả trạng thái</option>
                 <option value="pending">Đang chờ</option>
                 <option value="completed">Đã hoàn thành</option>
+                <option value="overdue">Đã quá hạn</option>
               </select>
 
               <select id="filter-priority" data-testid="select-filter-priority" aria-label="Lọc theo độ ưu tiên">
@@ -224,6 +242,15 @@
                 <option value="medium">Độ ưu tiên Trung bình</option>
                 <option value="low">Độ ưu tiên Thấp</option>
               </select>
+            </div>
+            <div class="sort-controls">
+              <label for="sort-tasks">Sắp xếp</label>
+              <select id="sort-tasks" data-testid="select-sort-tasks">
+                <option value="newest">Thứ tự mặc định</option>
+                <option value="due-date">Hạn nộp gần nhất</option>
+                <option value="priority">Ưu tiên cao trước</option>
+              </select>
+              <button type="button" id="btn-reset-filters" class="btn btn-secondary" data-testid="btn-reset-filters">Xóa bộ lọc</button>
             </div>
           </div>
 

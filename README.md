@@ -4,6 +4,22 @@ Dự án kiểm thử tự động toàn diện **End-to-End (E2E) Testing**, t�
 
 Dự án phục vụ học phần **SWT301 – Software Testing** tại trường Đại học FPT.
 
+### Cập nhật frontend (27/10/2026)
+
+- Chỉnh sửa tiêu đề, môn học, độ ưu tiên, hạn nộp và ghi chú; hủy chỉnh sửa khi cần. Giữ nguyên trạng thái hoàn thành và cho phép giữ hạn nộp cũ khi sửa nhiệm vụ quá hạn.
+- Lọc nhiệm vụ quá hạn, sắp xếp theo hạn nộp hoặc độ ưu tiên và xóa bộ lọc bằng một nút.
+- Tổng quan tiến độ hoàn thành, số nhiệm vụ quá hạn, giao diện mới và bố cục responsive cho cả sinh viên lẫn admin.
+- Sửa dữ liệu mẫu đăng nhập lần đầu của `student2`; xóa bản nháp và bộ lọc khi đổi tài khoản.
+- Thêm `tests/frontend.spec.js` với 11 ca kiểm thử chức năng, dữ liệu và bố cục ở 320, 375, 768, 1280px. Bộ test hiện có 35 ca: 34 chạy thành công, 1 ca demo lỗi bỏ qua theo mặc định.
+
+Nếu cổng 3000 đang được dùng, chạy kiểm thử trên cổng riêng trong PowerShell:
+
+```powershell
+$env:PORT='3187'
+$env:CI='1'
+npm test
+```
+
 ---
 
 ## 📌 1. Giới thiệu tổng quan

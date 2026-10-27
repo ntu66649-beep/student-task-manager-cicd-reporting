@@ -1,8 +1,8 @@
 /* --- DESIGN SYSTEM & CSS VARIABLES --- */
 :root {
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --primary-light: #eff6ff;
+  --primary: #4338ca;
+  --primary-hover: #3730a3;
+  --primary-light: #eef2ff;
   --success: #10b981;
   --success-light: #ecfdf5;
   --warning: #f59e0b;
@@ -35,7 +35,7 @@
 
 body {
   font-family: var(--font-family);
-  background-color: #f1f5f9;
+  background-color: #f4f6fb;
   color: var(--dark);
   line-height: 1.5;
   min-height: 100vh;
@@ -51,6 +51,8 @@ body {
   position: fixed;
   top: 20px;
   right: 20px;
+  max-width: min(440px, calc(100vw - 40px));
+  overflow-wrap: anywhere;
   padding: 12px 20px;
   border-radius: var(--radius-md);
   color: var(--white);
@@ -112,6 +114,7 @@ body {
 
 .form-row .col {
   flex: 1;
+  min-width: 0;
 }
 
 input[type="text"],
@@ -189,7 +192,7 @@ textarea:focus {
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: radial-gradient(ellipse at top left, #4338ca 0%, transparent 60%), #111827;
 }
 
 .auth-card {
@@ -260,6 +263,7 @@ textarea:focus {
   position: sticky;
   top: 0;
   z-index: 100;
+  gap: 20px;
 }
 
 .navbar-brand {
@@ -294,6 +298,7 @@ textarea:focus {
 }
 
 .avatar-badge {
+  flex-shrink: 0;
   background-color: var(--primary-light);
   border-radius: 50%;
   width: 34px;
@@ -364,7 +369,7 @@ textarea:focus {
 /* --- CONTENT GRID --- */
 .content-grid {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 350px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -376,6 +381,7 @@ textarea:focus {
 }
 
 .card {
+  min-width: 0;
   background-color: var(--white);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -419,6 +425,7 @@ textarea:focus {
 
 .filter-controls select {
   flex: 1;
+  min-width: 0;
 }
 
 /* --- TASK LIST & TASK CARD --- */
@@ -471,6 +478,7 @@ textarea:focus {
 }
 
 .task-main-info {
+  min-width: 0;
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -652,7 +660,7 @@ textarea:focus {
 }
 
 .admin-grid {
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 320px minmax(0, 1fr);
 }
 
 .admin-student-list {
@@ -740,4 +748,94 @@ textarea:focus {
 .badge-primary {
   background-color: var(--primary-light);
   color: var(--primary);
+}
+
+/* Workspace overview and task tools */
+.eyebrow {
+  display: block;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.dashboard-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 12px 0 28px;
+}
+
+.dashboard-intro h1 { font-size: clamp(1.8rem, 3vw, 2.4rem); letter-spacing: -0.04em; }
+.dashboard-intro .subtitle { color: var(--gray-600); margin-top: 6px; }
+.progress-summary { min-width: 260px; padding: 18px; background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); }
+.progress-caption { display: flex; justify-content: space-between; gap: 16px; font-size: 0.8rem; margin-bottom: 10px; }
+.progress-caption strong { color: var(--primary); }
+progress { display: block; width: 100%; height: 8px; border: 0; border-radius: 999px; overflow: hidden; background: var(--gray-100); accent-color: var(--primary); }
+progress::-webkit-progress-bar { background: var(--gray-100); }
+progress::-webkit-progress-value { background: var(--primary); border-radius: 999px; }
+progress::-moz-progress-bar { background: var(--primary); }
+.student-stats { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.student-stats .stat-card { padding: 16px; gap: 10px; }
+.student-stats .stat-icon { width: 36px; height: 36px; font-size: 1.4rem; flex-shrink: 0; }
+.stat-overdue .stat-icon { background: var(--danger-light); }
+.stat-overdue .stat-number { color: #b91c1c; }
+.section-marker { color: var(--primary); font-size: 1.4rem; }
+.badge-overdue { background: var(--danger-light); color: #b91c1c; }
+.task-item.overdue .task-date { color: #b91c1c; font-weight: 600; }
+.task-main-info > div { min-width: 0; overflow-wrap: anywhere; }
+.task-actions { flex-shrink: 0; }
+.btn-action-edit { background: var(--primary-light); color: var(--primary); border: 0; border-radius: var(--radius-sm); padding: 7px 10px; font: inherit; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+.btn-action-edit:hover { background: #e0e7ff; }
+.btn-secondary { background: var(--gray-100); color: var(--gray-700); }
+.btn-secondary:hover { background: var(--gray-200); }
+#btn-cancel-edit { margin-top: 10px; }
+.sort-controls { display: flex; align-items: center; gap: 10px; }
+.sort-controls label { font-size: 0.8rem; color: var(--gray-600); white-space: nowrap; }
+.sort-controls select { width: auto; flex: 1; min-width: 0; }
+.sort-controls button { white-space: nowrap; }
+.task-list-header { gap: 12px; flex-wrap: wrap; }
+.student-card-header { gap: 12px; flex-wrap: wrap; }
+button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+
+@media (max-width: 1000px) {
+  .navbar { flex-wrap: wrap; }
+  .student-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .content-grid, .admin-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-intro { align-items: stretch; flex-direction: column; gap: 18px; }
+  .progress-summary { min-width: 0; }
+}
+
+@media (max-width: 600px) {
+  .navbar { position: static; padding: 16px; gap: 14px; }
+  .navbar-brand, .navbar-user, .user-info { min-width: 0; }
+  .navbar-user { width: 100%; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+  .navbar-brand h2 { font-size: 1.05rem; }
+  .user-greeting { overflow-wrap: anywhere; }
+  .dashboard-main { margin: 20px auto; padding: 0 12px; }
+  .stats-row, .student-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .stat-card, .student-stats .stat-card { padding: 12px; gap: 8px; }
+  .stat-icon { width: 32px; height: 32px; font-size: 1.3rem; flex-shrink: 0; }
+  .stat-label { font-size: 0.75rem; }
+  .stat-number { font-size: 1.4rem; }
+  .card-header, .card-body, .filter-bar { padding: 16px; }
+  .form-row, .filter-controls { flex-direction: column; gap: 8px; }
+  .sort-controls { flex-wrap: wrap; }
+  .sort-controls label { width: 100%; }
+  .task-header-row { flex-wrap: wrap; }
+  .task-main-info { flex-basis: 100%; }
+  .task-actions { margin-left: auto; }
+  .task-item { padding: 12px; }
+  .auth-card { padding: 28px 20px; }
+  .badge-admin-role { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
 }

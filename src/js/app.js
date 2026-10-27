@@ -155,6 +155,59 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+function icon(name) {
+  return `<svg class="icon" aria-hidden="true"><use href="icons.svg#${name}"></use></svg>`;
+}
+
+function setTheme(theme) {
+  const dark = theme === 'dark';
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  document.querySelectorAll('[data-theme-toggle]').forEach(button => {
+    button.innerHTML = icon(dark ? 'sun' : 'moon');
+    button.setAttribute('aria-label', dark ? 'Bật chế độ sáng' : 'Bật chế độ tối');
+    button.setAttribute('aria-pressed', String(dark));
+  });
+  document.querySelector('meta[name="theme-color"]').content = dark ? '#18191f' : '#f7f8fa';
+}
+
+function renderWorkspaceInsights() {
+  const today = getTodayDateString();
+  const pending = tasks.filter(task => !task.completed);
+  document.getElementById('nav-pending-count').textContent = pending.length;
+  document.getElementById('nav-overdue-count').textContent = tasks.filter(isOverdue).length;
+  document.querySelectorAll('[data-nav-filter]').forEach(button => {
+    const selected = button.dataset.navFilter === filterStatusSelect.value;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
+
+  const subjects = [...new Set(tasks.map(task => task.subject))];
+  document.getElementById('sidebar-subjects').innerHTML = subjects.map(subject => `
+    <button type="button" class="subject-link" data-subject="${escapeHtml(subject)}">
+      <span class="subject-dot"></span><span>${escapeHtml(subject)}</span>
+      <span class="subject-count">${tasks.filter(task => task.subject === subject).length}</span>
+    </button>`).join('');
+
+  const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  document.getElementById('week-calendar').innerHTML = Array.from({ length: 7 }, (_, offset) => {
+    const day = new Date();
+    day.setHours(12, 0, 0, 0);
+    day.setDate(day.getDate() + offset);
+    const date = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+    const count = pending.filter(task => task.dueDate === date).length;
+    return `<div class="calendar-day ${offset === 0 ? 'today' : ''} ${count ? 'has-tasks' : ''}"
+      data-date="${date}" aria-label="${day.toLocaleDateString('vi-VN')}: ${count} nhiệm vụ đến hạn">
+      <span>${weekdays[day.getDay()]}</span><strong>${day.getDate()}</strong><i class="calendar-dot" aria-hidden="true"></i></div>`;
+  }).join('');
+
+  const upcoming = pending.filter(task => task.dueDate && task.dueDate >= today)
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate)).slice(0, 3);
+  document.getElementById('upcoming-list').innerHTML = upcoming.length ? upcoming.map(task => `
+    <div class="upcoming-item"><i class="subject-dot"></i><div><strong>${escapeHtml(task.title)}</strong>
+    <span>${escapeHtml(task.subject)} · ${task.dueDate === today ? 'Hôm nay' : task.dueDate.split('-').reverse().join('/')}</span></div></div>`).join('')
+    : '<p class="upcoming-empty">Chưa có nhiệm vụ sắp đến hạn. Thêm kế hoạch mới để bắt đầu nhé.</p>';
+}
+
 function getPriorityLabel(priority) {
   switch (priority) {
     case 'high': return 'Cao';
@@ -199,6 +252,7 @@ function resetTaskForm() {
   cancelEditBtn.classList.add('hidden');
   taskFormError.classList.add('hidden');
   taskFormError.textContent = '';
+  document.getElementById('task-composer').classList.remove('editing');
   initDueDateMin();
 }
 
@@ -253,6 +307,10 @@ function updateStats() {
   document.getElementById('progress-label').textContent = `${completed}/${total} nhiệm vụ hoàn thành`;
   document.getElementById('progress-percent').textContent = `${percent}%`;
   document.getElementById('task-progress').value = percent;
+  document.getElementById('progress-ring').style.setProperty('--progress', `${percent}%`);
+  document.getElementById('progress-encouragement').textContent = total && completed === total
+    ? 'Tuyệt lắm! Bạn đã hoàn thành mọi nhiệm vụ.' : 'Mỗi nhiệm vụ là một bước tiến.';
+  renderWorkspaceInsights();
 }
 
 function renderTasks() {
@@ -310,21 +368,21 @@ function renderTasks() {
                 aria-label="${isCompleted ? 'Đánh dấu chưa hoàn thành' : 'Đánh dấu đã hoàn thành'}"
                 onclick="handleToggleTask('${task.id}')"
               >
-                ${isCompleted ? '✓' : ''}
+                ${isCompleted ? icon('check') : ''}
               </button>
               <div>
                 <h4 class="task-title" data-testid="task-item-title">${escapeHtml(task.title)}</h4>
                 ${task.desc ? `<p class="task-desc" data-testid="task-item-desc">${escapeHtml(task.desc)}</p>` : ''}
                 
                 <div class="task-badges">
-                  <span class="badge badge-subject" data-testid="task-item-subject">📚 ${escapeHtml(task.subject)}</span>
+                  <span class="badge badge-subject" data-testid="task-item-subject">${icon('book')} ${escapeHtml(task.subject)}</span>
                   <span class="badge badge-priority-${task.priority}" data-testid="task-item-priority">
-                    ⚡ Ưu tiên: ${getPriorityLabel(task.priority)}
+                    ${icon('flag')} Ưu tiên: ${getPriorityLabel(task.priority)}
                   </span>
                   <span class="badge ${isCompleted ? 'badge-status-completed' : 'badge-status-pending'}" data-testid="task-item-status">
-                    ${isCompleted ? '✅ Đã hoàn thành' : '⏳ Đang chờ'}
+                    ${isCompleted ? icon('check-circle') + ' Đã hoàn thành' : icon('clock') + ' Đang chờ'}
                   </span>
-                  ${task.dueDate ? `<span class="task-date" data-testid="task-item-date">📅 Hạn: ${task.dueDate}</span>` : ''}
+                  ${task.dueDate ? `<span class="task-date" data-testid="task-item-date">${icon('calendar')} Hạn: ${task.dueDate}</span>` : ''}
                   ${isOverdue(task) ? '<span class="badge badge-overdue" data-testid="task-overdue">Quá hạn</span>' : ''}
                 </div>
               </div>
@@ -332,7 +390,7 @@ function renderTasks() {
 
             <div class="task-actions">
               <button type="button" class="btn-action-edit" data-testid="btn-edit-task"
-                aria-label="Sửa nhiệm vụ" onclick="handleEditTask('${task.id}')">Sửa</button>
+                aria-label="Sửa nhiệm vụ" onclick="handleEditTask('${task.id}')">${icon('edit')}</button>
               <button 
                 type="button" 
                 class="btn-action-delete" 
@@ -341,7 +399,7 @@ function renderTasks() {
                 title="Xóa nhiệm vụ này"
                 onclick="handleDeleteTask('${task.id}')"
               >
-                🗑️
+                ${icon('trash')}
               </button>
             </div>
           </div>
@@ -499,6 +557,7 @@ window.handleEditTask = function(taskId) {
   cancelEditBtn.classList.remove('hidden');
   taskFormError.classList.add('hidden');
   initDueDateMin();
+  document.getElementById('task-composer').classList.add('editing');
   taskTitleInput.focus();
 };
 
@@ -660,14 +719,14 @@ function renderAdminSelectedStudentTasks() {
                 ${task.desc ? `<p class="task-desc">${escapeHtml(task.desc)}</p>` : ''}
                 
                 <div class="task-badges">
-                  <span class="badge badge-subject">📚 ${escapeHtml(task.subject)}</span>
+                  <span class="badge badge-subject">${icon('book')} ${escapeHtml(task.subject)}</span>
                   <span class="badge badge-priority-${task.priority}">
-                    ⚡ Ưu tiên: ${getPriorityLabel(task.priority)}
+                    ${icon('flag')} Ưu tiên: ${getPriorityLabel(task.priority)}
                   </span>
                   <span class="badge ${isCompleted ? 'badge-status-completed' : 'badge-status-pending'}" data-testid="admin-task-status">
-                    ${isCompleted ? '✅ Đã hoàn thành' : '⏳ Đang chờ'}
+                    ${isCompleted ? icon('check-circle') + ' Đã hoàn thành' : icon('clock') + ' Đang chờ'}
                   </span>
-                  ${task.dueDate ? `<span class="task-date">📅 Hạn: ${task.dueDate}</span>` : ''}
+                  ${task.dueDate ? `<span class="task-date">${icon('calendar')} Hạn: ${task.dueDate}</span>` : ''}
                 </div>
               </div>
             </div>
@@ -696,6 +755,41 @@ document.getElementById('btn-reset-filters').addEventListener('click', () => {
 if (adminFilterStatus) adminFilterStatus.addEventListener('change', renderAdminSelectedStudentTasks);
 
 // --- INITIALIZATION ---
+setTheme(localStorage.getItem('student_theme') || 'light');
+document.querySelectorAll('[data-theme-toggle]').forEach(button => {
+  button.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('student_theme', theme);
+    setTheme(theme);
+  });
+});
+document.querySelectorAll('[data-current-date]').forEach(element => {
+  element.innerHTML = `${icon('calendar')} ${new Date().toLocaleDateString('vi-VN', {
+    weekday: 'long', day: 'numeric', month: 'long'
+  })}`;
+});
+document.querySelectorAll('[data-create-task]').forEach(button => {
+  button.addEventListener('click', () => {
+    resetTaskForm();
+    taskTitleInput.focus();
+  });
+});
+document.querySelectorAll('[data-nav-filter]').forEach(button => {
+  button.addEventListener('click', () => {
+    resetFilters();
+    filterStatusSelect.value = button.dataset.navFilter;
+    renderTasks();
+    taskListContainer.closest('.card').scrollIntoView({ block: 'start' });
+  });
+});
+document.getElementById('sidebar-subjects').addEventListener('click', event => {
+  const button = event.target.closest('[data-subject]');
+  if (!button) return;
+  resetFilters();
+  searchInput.value = button.dataset.subject;
+  renderTasks();
+  taskListContainer.closest('.card').scrollIntoView({ block: 'start' });
+});
 document.addEventListener('DOMContentLoaded', () => {
   initDueDateMin();
   const savedUser = localStorage.getItem('student_current_user');

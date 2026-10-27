@@ -123,6 +123,55 @@ test('Changing accounts clears filters and unfinished edits', async ({ page }) =
   await expect(page.getByTestId('task-item')).toHaveCount(2);
 });
 
+test('Theme choice persists across reload, student login and admin login', async ({ page }) => {
+  await page.locator('#auth-view [data-theme-toggle]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await login(page);
+  await expect(page.locator('#dashboard-view [data-theme-toggle]')).toHaveAttribute('aria-label', 'Bật chế độ sáng');
+  await page.getByTestId('btn-logout').click();
+  await login(page, 'admin');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.locator('#admin-dashboard-view [data-theme-toggle]').click();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expect(page.getByTestId('admin-dashboard-view')).toBeVisible();
+});
+
+test('Sidebar navigation and subject links filter tasks; create action focuses a clean form', async ({ page }) => {
+  await login(page);
+  await page.locator('[data-nav-filter="overdue"]').click();
+  await expect(page.getByTestId('task-item')).toHaveCount(1);
+  await expect(page.locator('[data-nav-filter="overdue"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('[data-nav-filter="completed"]').click();
+  await expect(page.getByTestId('task-item')).toHaveCount(1);
+  await expect(page.getByTestId('task-item-status')).toContainText('Đã hoàn thành');
+  await page.locator('[data-subject="Cơ sở dữ liệu"]').click();
+  await expect(page.getByTestId('task-item')).toHaveCount(1);
+  await expect(page.getByTestId('task-item-subject')).toContainText('Cơ sở dữ liệu');
+  await page.getByTestId('btn-edit-task').click();
+  await page.locator('.welcome-panel [data-create-task]').click();
+  await expect(page.getByTestId('input-task-title')).toBeFocused();
+  await expect(page.getByTestId('input-task-title')).toHaveValue('');
+  await expect(page.getByTestId('btn-cancel-edit')).toBeHidden();
+});
+
+test('Seven-day calendar and upcoming tasks update when deadlines are added or completed', async ({ page }) => {
+  await login(page);
+  await expect(page.locator('.calendar-day')).toHaveCount(7);
+  await expect(page.locator('[data-date="2026-10-30"]')).toHaveClass(/has-tasks/);
+  await expect(page.locator('[data-date="2026-11-02"]')).toBeAttached();
+  await page.getByTestId('input-task-title').fill('Nộp bài hôm nay');
+  await page.getByTestId('input-task-due-date').fill('2026-10-27');
+  await page.getByTestId('btn-add-task').click();
+  await expect(page.locator('[data-date="2026-10-27"]')).toHaveClass(/has-tasks/);
+  await expect(page.locator('.upcoming-item').first()).toContainText('Nộp bài hôm nay');
+  await page.getByTestId('task-item').first().getByTestId('btn-toggle-task').click();
+  await expect(page.locator('[data-date="2026-10-27"]')).not.toHaveClass(/has-tasks/);
+  await expect(page.locator('#upcoming-list')).not.toContainText('Nộp bài hôm nay');
+});
+
 for (const width of [320, 375, 768, 1280]) {
   test(`Student and admin layouts fit a ${width}px viewport`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

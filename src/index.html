@@ -3,84 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f7f8fa">
+  <meta name="theme-color" content="#191d33">
   <title>StudyFlow · Student Task Manager</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="/css/studyflow-common.css">
+<link rel="stylesheet" href="/css/studyflow-adapter.css">
 </head>
 <body>
   <div id="toast" class="toast" data-testid="toast" role="status" aria-live="polite"></div>
-  <section id="auth-view" class="auth-container" data-testid="auth-view">
-    <div class="auth-story">
-      <a class="brand" href="#" aria-label="StudyFlow — Student Task Manager"><span class="brand-mark"><svg class="icon " aria-hidden="true"><use href="icons.svg#layers"></use></svg></span><span>StudyFlow<span class="brand-caption">Student Task Manager</span></span></a>
-      <div class="auth-story-content"><span class="auth-tag"><svg class="icon " aria-hidden="true"><use href="icons.svg#sparkles"></use></svg> Học tập có kế hoạch</span><h1>Ý tưởng lớn.<br>Bắt đầu từ<br><em>từng việc nhỏ.</em></h1><p>Một không gian gọn gàng cho bài tập, hạn nộp và những mục tiêu đang chờ bạn chinh phục.</p>
-        <div class="auth-preview"><div class="preview-heading"><span class="preview-dot"></span> Kế hoạch của mình <span class="preview-count">Hôm nay</span></div><div class="preview-task"><span class="preview-check"><svg class="icon " aria-hidden="true"><use href="icons.svg#check"></use></svg></span><div>Hoàn thành bài tập lập trình<span>Lập trình Web · Đã hoàn thành</span></div></div><div class="preview-task"><span class="preview-check unchecked"></span><div>Chuẩn bị cho buổi thuyết trình<span>Kiểm thử phần mềm · Đang thực hiện</span></div></div><div class="preview-progress"><span>Từng chút một, bạn đang tiến bộ.</span><svg class="icon " aria-hidden="true"><use href="icons.svg#arrow-up-right"></use></svg></div></div>
-      </div><p class="auth-footnote">Sắp xếp hôm nay. Tự tin ngày mai.</p>
-    </div>
-    <div class="auth-form-panel"><div class="auth-theme"><button type="button" class="icon-button theme-toggle" data-theme-toggle aria-label="Bật chế độ tối" title="Đổi giao diện sáng/tối"><svg class="icon " aria-hidden="true"><use href="icons.svg#moon"></use></svg></button></div><div class="auth-card"><span class="eyebrow">CHÀO MỪNG ĐẾN STUDYFLOW</span><h2>Rất vui được gặp bạn.</h2><p class="auth-description">Đăng nhập để tiếp tục kế hoạch học tập của mình.</p><form id="login-form" data-testid="form-login" novalidate>
-        <div id="auth-error" class="alert alert-danger hidden" data-testid="auth-error" role="alert"></div>
-
-        <div class="form-group">
-          <label for="username">Tên đăng nhập</label>
-          <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            data-testid="input-username"
-            placeholder="Ví dụ: student1" 
-            autocomplete="username"
-            required
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="password">Mật khẩu</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            data-testid="input-password"
-            placeholder="Nhập mật khẩu (ví dụ: 123456)" 
-            autocomplete="current-password"
-            required
-          >
-        </div>
-
-        <button type="submit" id="login-btn" class="btn btn-primary btn-block" data-testid="btn-login">
-          Đăng nhập
-        </button>
-
-        <div class="demo-accounts-box">
-          <p><strong>Tài khoản Demo thử nghiệm:</strong></p>
-          <ul>
-            <li><code>student1</code> / <code>123456</code> (Sinh viên: Nguyễn Văn Tuấn)</li>
-            <li><code>student2</code> / <code>123456</code> (Sinh viên: Trần Thị Mai)</li>
-            <li><code>admin</code> / <code>admin123</code> (Quản trị viên / Giảng viên)</li>
-          </ul>
-        </div>
-      </form><p class="auth-local-note"><svg class="icon " aria-hidden="true"><use href="icons.svg#shield"></use></svg> Dữ liệu được lưu trên trình duyệt của bạn.</p></div></div>
+  <section id="auth-view" class="sf-login" data-testid="auth-view" aria-label="Đăng nhập">
+    <div class="sf-login-story"><a class="sf-brand" href="./" aria-label="StudyFlow — Student Task Manager"><span class="sf-brand-mark"><span data-sf-icon="layers"></span></span><span>Study<span class="sf-brand-light">Flow</span><small>STUDENT WORKSPACE</small></span></a><div class="sf-login-story-content"><span class="sf-eyebrow">ÍT ÁP LỰC HƠN. NHIỀU TIẾN BỘ HƠN.</span><h1>Mỗi ngày một chút.<br><em>Tiến xa hơn.</em></h1><p>Gom bài tập, sắp xếp ưu tiên và dành thời gian cho điều quan trọng. Một không gian cho mọi kế hoạch học tập.</p><div class="sf-illustration" aria-hidden="true"><div class="sf-orbit"></div><div class="sf-orbit sf-orbit-two"></div><div class="sf-preview-note"><span class="sf-preview-check"><span data-sf-icon="check"></span></span><div><strong>Hoàn thành bài thực hành</strong><small>Thêm một bước tiến hôm nay</small></div><span class="sf-mini-badge">Đã xong</span></div><div class="sf-preview-progress"><span>Tiến độ học tập</span><strong>Vững bước mỗi ngày ↗</strong><div class="sf-preview-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="sf-star">✳</div></div></div><p class="sf-login-footnote">Sắp xếp hôm nay. Tự tin ngày mai.</p></div>
+    <div class="sf-login-side"><div class="sf-theme"><button type="button" class="icon-button" data-theme-toggle aria-label="Bật chế độ tối" title="Đổi giao diện sáng/tối">◐</button></div><div class="sf-login-card"><span class="sf-kicker">KHÔNG GIAN HỌC TẬP CỦA BẠN</span><h2>Chào mừng trở lại.</h2><p class="sf-subtitle">Đăng nhập để tiếp tục những kế hoạch còn dang dở.</p><form id="login-form" data-testid="form-login" novalidate><div id="auth-error" data-testid="auth-error" role="alert" class="sf-error hidden" ></div><div class="sf-field"><label for="username">Tên đăng nhập</label><input type="text" id="username" name="username" data-testid="input-username" placeholder="Nhập tên đăng nhập" autocomplete="username"  required></div><div class="sf-field"><label for="password">Mật khẩu</label><div class="sf-password"><input type="password" id="password" name="password" data-testid="input-password" placeholder="Nhập mật khẩu" autocomplete="current-password"  required><button id="sf-toggle-password" data-sf-toggle-password type="button" aria-label="Hiện mật khẩu" aria-pressed="false"><span data-sf-icon="eye"></span></button></div></div><button type="submit" id="login-btn" class="sf-login-submit" data-testid="btn-login">Đăng nhập <span data-sf-icon="arrow-right"></span></button></form><div class="sf-demo-box"><span class="sf-kicker">KHÁM PHÁ VỚI TÀI KHOẢN DEMO</span><p>Chọn một tài khoản để điền nhanh thông tin.</p><div class="sf-demo-buttons"><button type="button" data-sf-demo="student1" data-sf-password="123456" ><span class="sf-demo-avatar ">NT</span><span><strong>Nguyễn Văn Tuấn</strong><small>Sinh viên 01</small></span><span data-sf-icon="arrow-right"></span></button><button type="button" data-sf-demo="student2" data-sf-password="123456" ><span class="sf-demo-avatar peach">TM</span><span><strong>Trần Thị Mai</strong><small>Sinh viên 02</small></span><span data-sf-icon="arrow-right"></span></button><button type="button" data-sf-demo="admin" data-sf-password="admin123" ><span class="sf-demo-avatar mint"><span data-sf-icon="shield"></span></span><span><strong>Giảng viên</strong><small>Trang quản trị</small></span><span data-sf-icon="arrow-right"></span></button></div><small class="sf-demo-note">Bản demo • Dữ liệu được lưu trên trình duyệt này.</small></div></div></div>
   </section>
   <section id="dashboard-view" class="app-shell hidden" data-testid="dashboard-view">
-    <aside class="app-sidebar">
-  <a class="brand" href="#" aria-label="StudyFlow — Student Task Manager"><span class="brand-mark"><svg class="icon " aria-hidden="true"><use href="icons.svg#layers"></use></svg></span><span>StudyFlow<span class="brand-caption">Student Task Manager</span></span></a>
+    <aside class="app-sidebar sf-sidebar">
+  <a class="sf-brand" href="#" aria-label="StudyFlow — Student Task Manager"><span class="sf-brand-mark"><span data-sf-icon="layers"></span></span><span>Study<span class="sf-brand-light">Flow</span><small>STUDENT WORKSPACE</small></span></a>
   <div class="workspace-label">KHÔNG GIAN CỦA BẠN</div>
   <nav class="side-nav" aria-label="Điều hướng học tập">
     <button class="nav-item active" data-nav-filter="all" type="button"><svg class="icon " aria-hidden="true"><use href="icons.svg#dashboard"></use></svg><span>Tổng quan</span></button><button class="nav-item" data-nav-filter="pending" type="button"><svg class="icon " aria-hidden="true"><use href="icons.svg#tasks"></use></svg><span>Đang thực hiện</span><span class="nav-count" id="nav-pending-count">0</span></button><button class="nav-item" data-nav-filter="completed" type="button"><svg class="icon " aria-hidden="true"><use href="icons.svg#check-circle"></use></svg><span>Đã hoàn thành</span></button><button class="nav-item" data-nav-filter="overdue" type="button"><svg class="icon " aria-hidden="true"><use href="icons.svg#clock"></use></svg><span>Quá hạn</span><span class="nav-count danger" id="nav-overdue-count">0</span></button>
   </nav>
   <div class="workspace-label subject-label">MÔN HỌC CỦA BẠN</div><div id="sidebar-subjects" class="sidebar-subjects"></div><div class="sidebar-note"><span class="note-spark"><svg class="icon " aria-hidden="true"><use href="icons.svg#sparkles"></use></svg></span><h3>Từng bước nhỏ.<br>Kết quả lớn.</h3><p>Bắt đầu từ một nhiệm vụ, xây dựng một thói quen.</p><button type="button" class="text-button" data-create-task>Tạo nhiệm vụ <svg class="icon " aria-hidden="true"><use href="icons.svg#arrow-right"></use></svg></button></div>
   <div class="sidebar-footer"><span class="online-dot"></span> Không gian học tập cá nhân</div>
-</aside><div class="app-content"><header class="navbar">
+</aside><div class="app-content"><header class="navbar sf-topbar">
   <div class="breadcrumb"><svg class="icon " aria-hidden="true"><use href="icons.svg#dashboard"></use></svg><span>Không gian học tập</span><span class="breadcrumb-separator">/</span><strong>Tổng quan</strong></div>
   <div class="navbar-user"><button type="button" class="icon-button theme-toggle" data-theme-toggle aria-label="Bật chế độ tối" title="Đổi giao diện sáng/tối"><svg class="icon " aria-hidden="true"><use href="icons.svg#moon"></use></svg></button><span class="topbar-divider"></span><div class="user-info"><span class="avatar-badge ">SV</span><span id="user-greeting" class="user-greeting" data-testid="user-greeting">Xin chào</span></div><button id="logout-btn" class="icon-button logout-button" data-testid="btn-logout" title="Đăng xuất" aria-label="Đăng xuất"><svg class="icon " aria-hidden="true"><use href="icons.svg#log-out"></use></svg></button></div>
 </header>
       <main class="dashboard-main" id="student-overview">
         <div class="page-heading"><div><p class="eyebrow">MỖI NGÀY MỘT CHÚT TIẾN BỘ</p><h1>Tổng quan học tập<span class="heading-dot">.</span></h1></div><span class="date-pill" data-current-date><svg class="icon " aria-hidden="true"><use href="icons.svg#calendar"></use></svg> Hôm nay</span></div>
-        <section class="overview-grid" aria-label="Tổng quan tiến độ">
-          <div class="welcome-panel"><div class="welcome-copy"><span class="hero-kicker"><span></span> Sẵn sàng cho một ngày hiệu quả</span><h2>Học có kế hoạch.<br>Tiến bộ mỗi ngày.</h2><p>Việc quan trọng trước. Từng mục tiêu một.<br>Cùng tạo nên một học kỳ thật đáng nhớ.</p><button type="button" class="btn btn-primary" data-create-task><svg class="icon " aria-hidden="true"><use href="icons.svg#plus"></use></svg> Tạo nhiệm vụ</button></div><svg class="hero-illustration" viewBox="0 0 240 220" fill="none" aria-hidden="true"><circle cx="130" cy="110" r="82" stroke="#c3b9ee" stroke-dasharray="4 8"/><circle cx="130" cy="110" r="60" fill="#e4def8"/><g transform="rotate(10 130 115)"><rect x="84" y="42" width="110" height="142" rx="14" fill="#c1b4e8"/><rect x="72" y="34" width="110" height="142" rx="14" fill="white"/><rect x="72" y="34" width="22" height="142" rx="10" fill="#5f49a8"/><path d="M107 64H159M107 76H140" stroke="#cbc3e3" stroke-width="5" stroke-linecap="round"/><rect x="107" y="94" width="13" height="13" rx="4" fill="#e7f4ed"/><path d="m110 100 3 3 5-6" stroke="#5a9873" stroke-width="2" stroke-linecap="round"/><path d="M130 101H159M130 126H154M130 151H159" stroke="#dfd9ed" stroke-width="4" stroke-linecap="round"/><rect x="107" y="120" width="13" height="13" rx="4" fill="#eee9f9"/><rect x="107" y="145" width="13" height="13" rx="4" fill="#eee9f9"/></g><rect x="39" y="137" width="70" height="47" rx="12" fill="#f4cb91" transform="rotate(-12 39 137)"/><path d="m61 155 8 8 15-19" stroke="#8c632d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="198" cy="55" r="20" fill="#5f49a8"/><path d="m198 44 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="white"/><path d="m52 66 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#ab96d7"/><circle cx="193" cy="180" r="5" fill="#c6b5e7"/></svg></div>
-          <div class="progress-summary"><div class="panel-title">Tiến độ của bạn <svg class="icon " aria-hidden="true"><use href="icons.svg#trend-up"></use></svg></div><div class="progress-ring" id="progress-ring"><div><strong id="progress-percent">0%</strong><span>hoàn thành</span></div></div><label id="progress-label" for="task-progress">0/0 nhiệm vụ hoàn thành</label><progress id="task-progress" max="100" value="0" aria-label="Tiến độ hoàn thành nhiệm vụ"></progress><span class="progress-encouragement" id="progress-encouragement">Mỗi nhiệm vụ là một bước tiến.</span></div>
-        </section>
         <section class="stats-row student-stats" aria-label="Thống kê công việc">
-        <div class="stat-card stat-total">
+        <div class="stat-card sf-stat stat-total">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#tasks"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Tổng nhiệm vụ</span>
@@ -88,7 +40,7 @@
           </div>
         </div>
 
-        <div class="stat-card stat-pending">
+        <div class="stat-card sf-stat stat-pending">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#clock"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Đang chờ xử lý</span>
@@ -96,7 +48,7 @@
           </div>
         </div>
 
-        <div class="stat-card stat-completed">
+        <div class="stat-card sf-stat stat-completed">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#check-circle"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Đã hoàn thành</span>
@@ -104,28 +56,33 @@
           </div>
         </div>
 
-        <div class="stat-card stat-high">
+        <div class="stat-card sf-stat stat-high">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#flag"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Độ ưu tiên cao</span>
             <span id="stat-high" class="stat-number" data-testid="stat-high">0</span>
           </div>
         </div>
-        <div class="stat-card stat-overdue">
+        <div class="stat-card sf-stat stat-overdue">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#calendar"></use></svg></div>
           <div class="stat-details"><span class="stat-label">Đã quá hạn</span>
             <span id="stat-overdue" class="stat-number" data-testid="stat-overdue">0</span></div>
         </div>
       </section>
+<section class="overview-grid" aria-label="Tổng quan tiến độ">
+          <div class="welcome-panel"><div class="welcome-copy"><span class="hero-kicker"><span></span> Sẵn sàng cho một ngày hiệu quả</span><h2>Học có kế hoạch.<br>Tiến bộ mỗi ngày.</h2><p>Việc quan trọng trước. Từng mục tiêu một.<br>Cùng tạo nên một học kỳ thật đáng nhớ.</p><button type="button" class="btn btn-primary" data-create-task><svg class="icon " aria-hidden="true"><use href="icons.svg#plus"></use></svg> Tạo nhiệm vụ</button></div><svg class="hero-illustration" viewBox="0 0 240 220" fill="none" aria-hidden="true"><circle cx="130" cy="110" r="82" stroke="#c3b9ee" stroke-dasharray="4 8"/><circle cx="130" cy="110" r="60" fill="#e4def8"/><g transform="rotate(10 130 115)"><rect x="84" y="42" width="110" height="142" rx="14" fill="#c1b4e8"/><rect x="72" y="34" width="110" height="142" rx="14" fill="white"/><rect x="72" y="34" width="22" height="142" rx="10" fill="#5f49a8"/><path d="M107 64H159M107 76H140" stroke="#cbc3e3" stroke-width="5" stroke-linecap="round"/><rect x="107" y="94" width="13" height="13" rx="4" fill="#e7f4ed"/><path d="m110 100 3 3 5-6" stroke="#5a9873" stroke-width="2" stroke-linecap="round"/><path d="M130 101H159M130 126H154M130 151H159" stroke="#dfd9ed" stroke-width="4" stroke-linecap="round"/><rect x="107" y="120" width="13" height="13" rx="4" fill="#eee9f9"/><rect x="107" y="145" width="13" height="13" rx="4" fill="#eee9f9"/></g><rect x="39" y="137" width="70" height="47" rx="12" fill="#f4cb91" transform="rotate(-12 39 137)"/><path d="m61 155 8 8 15-19" stroke="#8c632d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="198" cy="55" r="20" fill="#5f49a8"/><path d="m198 44 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z" fill="white"/><path d="m52 66 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="#ab96d7"/><circle cx="193" cy="180" r="5" fill="#c6b5e7"/></svg></div>
+          <div class="progress-summary"><div class="panel-title">Tiến độ của bạn <svg class="icon " aria-hidden="true"><use href="icons.svg#trend-up"></use></svg></div><div class="progress-ring" id="progress-ring"><div><strong id="progress-percent">0%</strong><span>hoàn thành</span></div></div><label id="progress-label" for="task-progress">0/0 nhiệm vụ hoàn thành</label><progress id="task-progress" max="100" value="0" aria-label="Tiến độ hoàn thành nhiệm vụ"></progress><span class="progress-encouragement" id="progress-encouragement">Mỗi nhiệm vụ là một bước tiến.</span></div>
+        </section>
+
         <div class="content-grid workspace-grid">
           <aside class="composer-column"><section class="card add-task-card" id="task-composer"><div class="card-header"><div><span class="eyebrow">GHI LẠI ĐỂ BẮT ĐẦU</span><h3 id="task-form-heading">Thêm nhiệm vụ mới</h3></div><span class="section-marker"><svg class="icon " aria-hidden="true"><use href="icons.svg#plus"></use></svg></span></div><div class="card-body"><form id="task-form" data-testid="form-add-task" novalidate>
               <div id="task-form-error" class="alert alert-danger hidden" data-testid="task-form-error" role="alert"></div>
 
               <div class="form-group">
                 <label for="task-title">Tên nhiệm vụ <span class="required">*</span></label>
-                <input 
-                  type="text" 
-                  id="task-title" 
+                <input
+                  type="text"
+                  id="task-title"
                   name="taskTitle"
                   data-testid="input-task-title"
                   placeholder="Bạn cần hoàn thành việc gì?"
@@ -159,9 +116,9 @@
 
               <div class="form-group">
                 <label for="task-due-date">Hạn nộp</label>
-                <input 
-                  type="date" 
-                  id="task-due-date" 
+                <input
+                  type="date"
+                  id="task-due-date"
                   name="taskDueDate"
                   data-testid="input-task-due-date"
                 >
@@ -169,11 +126,11 @@
 
               <div class="form-group">
                 <label for="task-desc">Ghi chú chi tiết</label>
-                <textarea 
-                  id="task-desc" 
+                <textarea
+                  id="task-desc"
                   name="taskDesc"
                   data-testid="input-task-desc"
-                  rows="3" 
+                  rows="3"
                   placeholder="Ghi chú yêu cầu, tài liệu tham khảo hoặc link nộp bài..."
                 ></textarea>
               </div>
@@ -193,9 +150,9 @@
           <!-- Bộ lọc & Tìm kiếm -->
           <div class="filter-bar">
             <div class="search-box"><svg class="icon " aria-hidden="true"><use href="icons.svg#search"></use></svg>
-              <input 
-                type="text" 
-                id="search-input" 
+              <input
+                type="text"
+                id="search-input"
                 aria-label="Tìm kiếm nhiệm vụ theo tên hoặc môn học"
                 data-testid="input-search"
                 placeholder="Tìm theo tên nhiệm vụ, môn học..."
@@ -245,20 +202,20 @@
     </div>
   </section>
   <section id="admin-dashboard-view" class="app-shell hidden" data-testid="admin-dashboard-view">
-    <aside class="app-sidebar">
-  <a class="brand" href="#" aria-label="StudyFlow — Student Task Manager"><span class="brand-mark"><svg class="icon " aria-hidden="true"><use href="icons.svg#layers"></use></svg></span><span>StudyFlow<span class="brand-caption">Student Task Manager</span></span></a>
+    <aside class="app-sidebar sf-sidebar">
+  <a class="sf-brand" href="#" aria-label="StudyFlow — Student Task Manager"><span class="sf-brand-mark"><span data-sf-icon="layers"></span></span><span>Study<span class="sf-brand-light">Flow</span><small>STUDENT WORKSPACE</small></span></a>
   <div class="workspace-label">QUẢN LÝ LỚP HỌC</div>
   <nav class="side-nav" aria-label="Điều hướng quản trị">
     <a class="nav-item active" href="#admin-overview"><svg class="icon " aria-hidden="true"><use href="icons.svg#dashboard"></use></svg><span>Tổng quan</span></a><a class="nav-item" href="#admin-students"><svg class="icon " aria-hidden="true"><use href="icons.svg#users"></use></svg><span>Sinh viên</span></a>
   </nav>
   <div class="sidebar-note"><span class="eyebrow">Góc giảng viên</span><h3>Mỗi tiến bộ đều đáng ghi nhận.</h3><p>Theo dõi và đồng hành cùng hành trình học tập của sinh viên.</p></div>
   <div class="sidebar-footer"><span class="online-dot"></span> Không gian học tập cá nhân</div>
-</aside><div class="app-content"><header class="navbar">
+</aside><div class="app-content"><header class="navbar sf-topbar">
   <div class="breadcrumb"><svg class="icon " aria-hidden="true"><use href="icons.svg#users"></use></svg><span>Quản lý lớp học</span><span class="breadcrumb-separator">/</span><strong>Tổng quan</strong></div>
   <div class="navbar-user"><button type="button" class="icon-button theme-toggle" data-theme-toggle aria-label="Bật chế độ tối" title="Đổi giao diện sáng/tối"><svg class="icon " aria-hidden="true"><use href="icons.svg#moon"></use></svg></button><span class="topbar-divider"></span><div class="user-info"><span class="avatar-badge avatar-admin">GV</span><span id="admin-greeting" class="user-greeting" data-testid="admin-greeting">Xin chào</span></div><button id="admin-logout-btn" class="icon-button logout-button" data-testid="btn-admin-logout" title="Đăng xuất" aria-label="Đăng xuất"><svg class="icon " aria-hidden="true"><use href="icons.svg#log-out"></use></svg></button></div>
 </header><main class="dashboard-main" id="admin-overview"><div class="page-heading"><div><p class="eyebrow">ĐỒNG HÀNH CÙNG SINH VIÊN</p><h1>Tổng quan lớp học<span class="heading-dot">.</span></h1></div><span class="date-pill" data-current-date><svg class="icon " aria-hidden="true"><use href="icons.svg#calendar"></use></svg> Hôm nay</span></div><div class="admin-welcome"><div><span class="hero-kicker">GÓC GIẢNG VIÊN</span><h2>Theo dõi tiến độ.<br>Khơi mở tiềm năng.</h2><p>Một góc nhìn rõ ràng về hành trình học tập của sinh viên.</p></div><div class="admin-welcome-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#users"></use></svg></div></div><!-- Quick Stats Cards Hệ thống -->
       <section class="stats-row" aria-label="Thống kê tổng quan hệ thống">
-        <div class="stat-card stat-total">
+        <div class="stat-card sf-stat stat-total">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#users"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Tổng sinh viên</span>
@@ -266,7 +223,7 @@
           </div>
         </div>
 
-        <div class="stat-card stat-pending">
+        <div class="stat-card sf-stat stat-pending">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#tasks"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Tổng nhiệm vụ hệ thống</span>
@@ -274,7 +231,7 @@
           </div>
         </div>
 
-        <div class="stat-card stat-completed">
+        <div class="stat-card sf-stat stat-completed">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#check-circle"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Nhiệm vụ đã hoàn thành</span>
@@ -282,7 +239,7 @@
           </div>
         </div>
 
-        <div class="stat-card stat-high">
+        <div class="stat-card sf-stat stat-high">
           <div class="stat-icon"><svg class="icon " aria-hidden="true"><use href="icons.svg#clock"></use></svg></div>
           <div class="stat-details">
             <span class="stat-label">Nhiệm vụ đang chờ</span>
@@ -343,5 +300,6 @@
     <div class="admin-notice-banner" role="note"><svg class="icon " aria-hidden="true"><use href="icons.svg#info"></use></svg><span>Không gian demo: dữ liệu sinh viên và nhiệm vụ được tổng hợp từ localStorage trên trình duyệt.</span></div><footer class="workspace-footer">Cùng tạo nên những trải nghiệm học tập tốt hơn.<span>StudyFlow · Góc giảng viên</span></footer></main></div>
   </section>
   <script src="js/app.js"></script>
+<script src="/js/studyflow-common.js" defer></script>
 </body>
 </html>

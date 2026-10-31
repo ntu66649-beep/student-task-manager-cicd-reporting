@@ -3,7 +3,7 @@
 **Dự án:** Student Task Manager – CI/CD & Reporting  
 **Học phần:** SWT301 – Software Testing  
 **Công cụ kiểm thử:** Playwright Test Framework  
-**Tổng số ca kiểm thử:** 24 Test Cases (23 Automated Official Tests + 1 Controlled Failure Demo Test)  
+**Tổng số ca kiểm thử:** 26 Test Cases (25 Automated Official Tests + 1 Controlled Failure Demo Test)
 
 ---
 
@@ -214,6 +214,16 @@
   2. Chọn lọc "Đang chờ" -> Kiểm tra hiển thị đúng 2 bài tập đang chờ.
   3. Chọn lọc "Tất cả" -> Kiểm tra hiển thị đủ cả 3 bài tập.
 - **Kết quả mong đợi:** Danh sách bài tập hiển thị khớp chính xác theo từng tùy chọn lọc.
+
+#### TC_TASK_09: Chỉnh sửa nhiệm vụ đã tạo
+- **File thực thi:** `tests/tasks.spec.js`
+- **Các bước:** Chọn Sửa trên một nhiệm vụ, cập nhật tiêu đề rồi lưu.
+- **Kết quả mong đợi:** Nội dung mới hiển thị, số lượng nhiệm vụ không đổi.
+
+#### TC_TASK_10: Tạo nhiệm vụ với môn học tùy chỉnh
+- **File thực thi:** `tests/tasks.spec.js`
+- **Các bước:** Chọn “Môn học khác”, nhập tên môn và lưu nhiệm vụ.
+- **Kết quả mong đợi:** Tên môn tùy chỉnh hiển thị trên nhiệm vụ mới.
 
 #### TC_TASK_08: Tìm kiếm theo từ khóa và hiển thị Empty State khi không có kết quả
 - **File thực thi:** `tests/tasks.spec.js`

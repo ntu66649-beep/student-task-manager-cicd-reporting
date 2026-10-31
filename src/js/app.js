@@ -95,6 +95,10 @@ const taskDueDateInput = document.getElementById('task-due-date');
 const taskPrioritySelect = document.getElementById('task-priority');
 const taskDescInput = document.getElementById('task-desc');
 const taskFormError = document.getElementById('task-form-error');
+const customSubjectGroup = document.getElementById('custom-subject-group');
+const customSubjectInput = document.getElementById('task-subject-custom');
+const cancelEditBtn = document.getElementById('btn-cancel-edit');
+let editingTaskId = null;
 
 const searchInput = document.getElementById('search-input');
 const filterStatusSelect = document.getElementById('filter-status');
@@ -160,11 +164,18 @@ function getPriorityLabel(priority) {
 }
 
 function getTodayDateString() {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(new Date());
+}
+
+function getDueDateState(task) {
+  if (!task.dueDate || task.completed) return null;
+  const daysLeft = Math.round((Date.parse(`${task.dueDate}T00:00:00Z`) - Date.parse(`${getTodayDateString()}T00:00:00Z`)) / 86400000);
+  if (daysLeft < 0) return { label: `Quá hạn ${Math.abs(daysLeft)} ngày`, className: 'badge-due-overdue' };
+  if (daysLeft === 0) return { label: 'Hạn hôm nay', className: 'badge-due-soon' };
+  if (daysLeft <= 3) return { label: `Còn ${daysLeft} ngày`, className: 'badge-due-soon' };
+  return null;
 }
 
 function initDueDateMin() {
@@ -184,13 +195,16 @@ function loadTasks() {
   const data = localStorage.getItem(key);
   if (data) {
     try {
-      tasks = JSON.parse(data);
+      const parsed = JSON.parse(data);
+      tasks = Array.isArray(parsed) ? parsed.filter(task => task && typeof task.id === 'string' && typeof task.title === 'string') : [];
     } catch (e) {
-      tasks = [...DEFAULT_SAMPLE_TASKS];
+      tasks = currentUser.username === 'student2' ? [...DEFAULT_STUDENT2_TASKS] : [...DEFAULT_SAMPLE_TASKS];
+      saveTasks();
     }
   } else {
     // Initial tasks for newly logged in account
-    tasks = JSON.parse(JSON.stringify(DEFAULT_SAMPLE_TASKS));
+    const defaults = currentUser.username === 'student2' ? DEFAULT_STUDENT2_TASKS : DEFAULT_SAMPLE_TASKS;
+    tasks = JSON.parse(JSON.stringify(defaults));
     saveTasks();
   }
 }
@@ -275,12 +289,14 @@ function renderTasks() {
                   <span class="badge ${isCompleted ? 'badge-status-completed' : 'badge-status-pending'}" data-testid="task-item-status">
                     ${isCompleted ? '✅ Đã hoàn thành' : '⏳ Đang chờ'}
                   </span>
-                  ${task.dueDate ? `<span class="task-date" data-testid="task-item-date">📅 Hạn: ${task.dueDate}</span>` : ''}
+                  ${task.dueDate ? `<span class="task-date" data-testid="task-item-date">📅 Hạn: ${escapeHtml(task.dueDate)}</span>` : ''}
+                  ${getDueDateState(task) ? `<span class="badge ${getDueDateState(task).className}" data-testid="task-due-state">${getDueDateState(task).label}</span>` : ''}
                 </div>
               </div>
             </div>
 
             <div class="task-actions">
+              <button type="button" class="btn-action-edit" data-testid="btn-edit-task" aria-label="Sửa nhiệm vụ" title="Sửa nhiệm vụ" onclick="handleEditTask('${task.id}')">✏️</button>
               <button 
                 type="button" 
                 class="btn-action-delete" 
@@ -378,7 +394,7 @@ function handleAddTask(e) {
   taskFormError.textContent = '';
 
   const title = taskTitleInput.value.trim();
-  const subject = taskSubjectSelect.value;
+  const subject = taskSubjectSelect.value === 'Khác' ? customSubjectInput.value.trim() : taskSubjectSelect.value;
   const priority = taskPrioritySelect.value;
   const dueDate = taskDueDateInput.value;
   const desc = taskDescInput.value.trim();
@@ -388,6 +404,13 @@ function handleAddTask(e) {
     taskFormError.textContent = 'Vui lòng nhập tên nhiệm vụ!';
     taskFormError.classList.remove('hidden');
     taskTitleInput.focus();
+    return;
+  }
+
+  if (taskSubjectSelect.value === 'Khác' && !subject) {
+    taskFormError.textContent = 'Vui lòng nhập tên môn học!';
+    taskFormError.classList.remove('hidden');
+    customSubjectInput.focus();
     return;
   }
 
@@ -403,25 +426,63 @@ function handleAddTask(e) {
   }
 
   const newTask = {
-    id: 'task_' + Date.now(),
+    id: editingTaskId || 'task_' + Date.now(),
     title: title,
     subject: subject,
     priority: priority,
     dueDate: dueDate,
     desc: desc,
     completed: false,
-    createdAt: new Date().toISOString()
+    createdAt: editingTaskId ? (tasks.find(task => task.id === editingTaskId)?.createdAt || new Date().toISOString()) : new Date().toISOString()
   };
 
-  tasks.unshift(newTask);
+  if (editingTaskId) {
+    tasks = tasks.map(task => task.id === editingTaskId ? newTask : task);
+    showToast('Cập nhật nhiệm vụ thành công!', 'success');
+  } else {
+    tasks.unshift(newTask);
+    showToast('Thêm nhiệm vụ mới thành công!', 'success');
+  }
+  editingTaskId = null;
   saveTasks();
   taskForm.reset();
+  customSubjectInput.disabled = true;
+  customSubjectGroup.classList.add('hidden');
+  cancelEditBtn.classList.add('hidden');
+  document.getElementById('btn-add-task').textContent = 'Lưu nhiệm vụ';
   // Keep default priority to medium and reset min date
   taskPrioritySelect.value = 'medium';
   initDueDateMin();
 
   renderTasks();
-  showToast('Thêm nhiệm vụ mới thành công!', 'success');
+}
+
+window.handleEditTask = function(taskId) {
+  const task = tasks.find(item => item.id === taskId);
+  if (!task) return;
+  editingTaskId = taskId;
+  taskTitleInput.value = task.title;
+  taskPrioritySelect.value = task.priority;
+  taskDueDateInput.value = task.dueDate || '';
+  taskDescInput.value = task.desc || '';
+  const knownSubject = [...taskSubjectSelect.options].some(option => option.value === task.subject && option.value !== 'Khác');
+  taskSubjectSelect.value = knownSubject ? task.subject : 'Khác';
+  customSubjectInput.disabled = knownSubject;
+  customSubjectGroup.classList.toggle('hidden', knownSubject);
+  customSubjectInput.value = knownSubject ? '' : task.subject;
+  cancelEditBtn.classList.remove('hidden');
+  document.getElementById('btn-add-task').textContent = 'Cập nhật nhiệm vụ';
+  taskTitleInput.focus();
+};
+
+function cancelTaskEdit() {
+  editingTaskId = null;
+  taskForm.reset();
+  customSubjectInput.disabled = true;
+  customSubjectGroup.classList.add('hidden');
+  cancelEditBtn.classList.add('hidden');
+  document.getElementById('btn-add-task').textContent = 'Lưu nhiệm vụ';
+  taskPrioritySelect.value = 'medium';
 }
 
 window.handleToggleTask = function(taskId) {
@@ -455,7 +516,8 @@ function getStudentTasksFromStorage(username) {
   const data = localStorage.getItem(`student_tasks_${username}`);
   if (data) {
     try {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed.filter(task => task && typeof task.id === 'string' && typeof task.title === 'string') : [];
     } catch (e) {
       return [];
     }
@@ -604,6 +666,13 @@ loginForm.addEventListener('submit', handleLogin);
 logoutBtn.addEventListener('click', handleLogout);
 if (adminLogoutBtn) adminLogoutBtn.addEventListener('click', handleLogout);
 taskForm.addEventListener('submit', handleAddTask);
+cancelEditBtn.addEventListener('click', cancelTaskEdit);
+taskSubjectSelect.addEventListener('change', () => {
+  const custom = taskSubjectSelect.value === 'Khác';
+  customSubjectInput.disabled = !custom;
+  customSubjectGroup.classList.toggle('hidden', !custom);
+  if (custom) customSubjectInput.focus();
+});
 
 searchInput.addEventListener('input', renderTasks);
 filterStatusSelect.addEventListener('change', renderTasks);

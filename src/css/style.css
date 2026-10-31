@@ -587,6 +587,20 @@ textarea:focus {
   gap: 8px;
 }
 
+.btn-action-edit {
+  background: none;
+  border: none;
+  color: var(--gray-600);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.btn-action-edit:hover { color: var(--primary); background-color: var(--primary-light); }
+.badge-due-overdue { background-color: var(--danger-light); color: var(--danger); }
+.badge-due-soon { background-color: var(--warning-light); color: #b45309; }
+
 .btn-action-delete {
   background: none;
   border: none;

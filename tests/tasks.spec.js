@@ -264,4 +264,23 @@ test.describe('Chức năng Quản lý Nhiệm vụ (Task Management)', () => {
     await expect(page.getByTestId('task-item')).toHaveCount(3);
   });
 
+  test('[PASS] Cho phép sửa nhiệm vụ và lưu thay đổi', async ({ page }) => {
+    const firstTask = page.getByTestId('task-item').first();
+    await firstTask.getByTestId('btn-edit-task').click();
+    await expect(page.getByTestId('input-task-title')).toHaveValue('Nộp báo cáo giữa kỳ môn Kiểm thử phần mềm');
+    await page.getByTestId('input-task-title').fill('Báo cáo giữa kỳ đã cập nhật');
+    await page.getByTestId('btn-add-task').click();
+    await expect(page.getByTestId('toast')).toContainText('Cập nhật nhiệm vụ thành công!');
+    await expect(page.getByTestId('task-item').first().getByTestId('task-item-title')).toHaveText('Báo cáo giữa kỳ đã cập nhật');
+    await expect(page.getByTestId('stat-total')).toHaveText('3');
+  });
+
+  test('[PASS] Nhập môn học tùy chỉnh khi chọn môn học khác', async ({ page }) => {
+    await page.getByTestId('input-task-title').fill('Ôn tập môn tự chọn');
+    await page.getByTestId('select-task-subject').selectOption('Khác');
+    await page.getByTestId('input-task-subject-custom').fill('An toàn thông tin');
+    await page.getByTestId('btn-add-task').click();
+    await expect(page.getByTestId('task-item').first().getByTestId('task-item-subject')).toContainText('An toàn thông tin');
+  });
+
 });

@@ -156,6 +156,11 @@
                   </select>
                 </div>
 
+                <div class="form-group col hidden" id="custom-subject-group">
+                  <label for="task-subject-custom">Tên môn học</label>
+                  <input type="text" id="task-subject-custom" data-testid="input-task-subject-custom" placeholder="Nhập tên môn học" maxlength="80" disabled>
+                </div>
+
                 <div class="form-group col">
                   <label for="task-priority">Độ ưu tiên</label>
                   <select id="task-priority" name="taskPriority" data-testid="select-task-priority">
@@ -187,6 +192,7 @@
                 ></textarea>
               </div>
 
+              <button type="button" id="btn-cancel-edit" class="btn btn-outline-danger btn-block hidden" data-testid="btn-cancel-edit">Hủy chỉnh sửa</button>
               <button type="submit" id="btn-add-task" class="btn btn-primary btn-block" data-testid="btn-add-task">
                 Lưu nhiệm vụ
               </button>

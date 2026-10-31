@@ -15,6 +15,7 @@ Website **Student Task Manager** là ứng dụng web quản lý tiến độ b�
 2. **Báo cáo chuyên nghiệp đa nền tảng**: Tích hợp đồng thời **Playwright HTML Report** (kèm Screenshot, Video, Trace Viewer) và **Allure Report** (giao diện phân tích đa chiều, biểu đồ trực quan, phân loại defect).
 3. **Đường ống CI/CD tự động hóa**: Cấu hình **GitHub Actions Workflow** tự động kích hoạt khi có commit `push` hoặc tạo `pull_request`, tự động cài đặt môi trường (Node.js, Java JDK cho Allure CLI, Playwright Chromium), thực thi kiểm thử và lưu trữ Artifacts báo cáo.
 4. **Kịch bản Demo có kiểm soát (Controlled PASS & FAIL)**: Cung cấp kịch bản trình diễn trực quan cho Giảng viên xem khả năng phát hiện lỗi, tự động chụp ảnh màn hình và khôi phục nhanh chóng mà không làm ảnh hưởng hay sửa đổi mã nguồn.
+5. **Quản lý nhiệm vụ linh hoạt**: Hỗ trợ sửa nhiệm vụ, nhập môn học tùy chỉnh và cảnh báo hạn nộp sắp tới hoặc quá hạn.\n5. **Quản lý nhiệm vụ linh hoạt**: Hỗ trợ sửa nhiệm vụ, nhập môn học tùy chỉnh và cảnh báo hạn nộp sắp tới hoặc quá hạn.
 
 ---
 
@@ -69,7 +70,7 @@ student-task-manager-cicd-reporting/
 
 | Tên đăng nhập (`username`) | Mật khẩu (`password`) | Vai trò (`Role`) | Chức năng truy cập |
 | :--- | :--- | :--- | :--- |
-| `student1` | `123456` | Sinh viên (Nguyễn Văn Tuấn) | Dashboard Sinh viên: xem bài tập, thêm bài tập, đánh dấu hoàn thành, xóa, tìm kiếm |
+| `student1` | `123456` | Sinh viên (Nguyễn Văn Tuấn) | Dashboard Sinh viên: xem, thêm, sửa, hoàn thành, xóa, tìm kiếm/lọc bài tập và nhận cảnh báo deadline |
 | `student2` | `123456` | Sinh viên (Trần Thị Mai) | Dashboard Sinh viên: dữ liệu bài tập riêng biệt của student2 |
 | `admin` | `admin123` | Quản trị viên (Giảng viên) | Admin Dashboard: xem số liệu toàn trường, danh sách sinh viên, tiến độ và chi tiết từng bài tập |
 

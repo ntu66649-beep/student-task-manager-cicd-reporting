@@ -98,8 +98,6 @@ const taskDescInput = document.getElementById('task-desc');
 const taskFormError = document.getElementById('task-form-error');
 const customSubjectGroup = document.getElementById('custom-subject-group');
 const customSubjectInput = document.getElementById('task-subject-custom');
-const cancelEditBtn = document.getElementById('btn-cancel-edit');
-let editingTaskId = null;
 
 const searchInput = document.getElementById('search-input');
 const filterStatusSelect = document.getElementById('filter-status');
@@ -288,21 +286,12 @@ function loadTasks() {
       const parsed = JSON.parse(data);
       tasks = Array.isArray(parsed) ? parsed.filter(task => task && typeof task.id === 'string' && typeof task.title === 'string') : [];
     } catch (e) {
-<<<<<<< HEAD
-      tasks = currentUser.username === 'student2' ? [...DEFAULT_STUDENT2_TASKS] : [...DEFAULT_SAMPLE_TASKS];
+      tasks = getDefaultTasks(currentUser.username);
       saveTasks();
     }
   } else {
     // Initial tasks for newly logged in account
-    const defaults = currentUser.username === 'student2' ? DEFAULT_STUDENT2_TASKS : DEFAULT_SAMPLE_TASKS;
-    tasks = JSON.parse(JSON.stringify(defaults));
-=======
       tasks = getDefaultTasks(currentUser.username);
-    }
-  } else {
-    // Initial tasks for newly logged in account
-    tasks = getDefaultTasks(currentUser.username);
->>>>>>> 22e414e8dfa5b7e61d2084a36fa37c4f8e56aea8
     saveTasks();
   }
 }
@@ -312,6 +301,67 @@ function saveTasks() {
   const key = getStorageKey(currentUser);
   localStorage.setItem(key, JSON.stringify(tasks));
 }
+
+// Export/import task data without adding controls to the existing interface.
+function validateTaskBackup(input) {
+  const backup = typeof input === 'string' ? JSON.parse(input) : input;
+  if (!backup || backup.version !== 1 || !Array.isArray(backup.tasks)) {
+    throw new Error('Tệp sao lưu không đúng định dạng hoặc phiên bản không được hỗ trợ.');
+  }
+
+  const ids = new Set();
+  const normalizedTasks = backup.tasks.map(task => {
+    if (!task || typeof task !== 'object' || typeof task.id !== 'string' || !task.id.trim() ||
+        typeof task.title !== 'string' || !task.title.trim() || typeof task.subject !== 'string' ||
+        !['low', 'medium', 'high'].includes(task.priority) || typeof task.completed !== 'boolean' ||
+        (task.dueDate !== '' && task.dueDate != null && !/^\d{4}-\d{2}-\d{2}$/.test(task.dueDate))) {
+      throw new Error('Tệp sao lưu chứa nhiệm vụ không hợp lệ.');
+    }
+    if (ids.has(task.id)) throw new Error('Tệp sao lưu chứa mã nhiệm vụ bị trùng.');
+    ids.add(task.id);
+    return {
+      id: task.id, title: task.title.trim(), subject: task.subject.trim(), priority: task.priority,
+      dueDate: task.dueDate || '', desc: typeof task.desc === 'string' ? task.desc : '',
+      completed: task.completed,
+      createdAt: typeof task.createdAt === 'string' ? task.createdAt : new Date().toISOString()
+    };
+  });
+  return { backup, tasks: normalizedTasks };
+}
+
+window.exportTaskBackup = function() {
+  if (!currentUser || currentUser.role !== 'student') {
+    throw new Error('Vui lòng đăng nhập bằng tài khoản sinh viên để sao lưu nhiệm vụ.');
+  }
+  const backup = {
+    version: 1,
+    username: currentUser.username,
+    exportedAt: new Date().toISOString(),
+    tasks: tasks
+  };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `student-tasks-${currentUser.username}-${getTodayDateString()}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  return backup;
+};
+
+window.importTaskBackup = function(input) {
+  if (!currentUser || currentUser.role !== 'student') {
+    throw new Error('Vui lòng đăng nhập bằng tài khoản sinh viên để khôi phục nhiệm vụ.');
+  }
+  const { backup, tasks: restoredTasks } = validateTaskBackup(input);
+  if (backup.username && backup.username !== currentUser.username) {
+    throw new Error('Tệp sao lưu thuộc về tài khoản sinh viên khác.');
+  }
+  tasks = restoredTasks;
+  saveTasks();
+  if (typeof renderTasks === 'function') renderTasks();
+  return tasks.length;
+};
 
 // --- RENDER FUNCTIONS ---
 function updateStats() {
@@ -404,24 +454,15 @@ function renderTasks() {
                   <span class="badge ${isCompleted ? 'badge-status-completed' : 'badge-status-pending'}" data-testid="task-item-status">
                     ${isCompleted ? icon('check-circle') + ' Đã hoàn thành' : icon('clock') + ' Đang chờ'}
                   </span>
-<<<<<<< HEAD
-                  ${task.dueDate ? `<span class="task-date" data-testid="task-item-date">📅 Hạn: ${escapeHtml(task.dueDate)}</span>` : ''}
-                  ${getDueDateState(task) ? `<span class="badge ${getDueDateState(task).className}" data-testid="task-due-state">${getDueDateState(task).label}</span>` : ''}
-=======
                   ${task.dueDate ? `<span class="task-date" data-testid="task-item-date">${icon('calendar')} Hạn: ${task.dueDate}</span>` : ''}
-                  ${isOverdue(task) ? '<span class="badge badge-overdue" data-testid="task-overdue">Quá hạn</span>' : ''}
->>>>>>> 22e414e8dfa5b7e61d2084a36fa37c4f8e56aea8
+                  ${getDueDateState(task) ? `<span class="badge ${getDueDateState(task).className}" data-testid="task-due-state">${getDueDateState(task).label}</span>` : ''}
                 </div>
               </div>
             </div>
 
             <div class="task-actions">
-<<<<<<< HEAD
-              <button type="button" class="btn-action-edit" data-testid="btn-edit-task" aria-label="Sửa nhiệm vụ" title="Sửa nhiệm vụ" onclick="handleEditTask('${task.id}')">✏️</button>
-=======
               <button type="button" class="btn-action-edit" data-testid="btn-edit-task"
-                aria-label="Sửa nhiệm vụ" onclick="handleEditTask('${task.id}')">${icon('edit')}</button>
->>>>>>> 22e414e8dfa5b7e61d2084a36fa37c4f8e56aea8
+                aria-label="Sửa nhiệm vụ" title="Sửa nhiệm vụ" onclick="handleEditTask('${task.id}')">${icon('edit')}</button>
               <button 
                 type="button" 
                 class="btn-action-delete" 
@@ -559,40 +600,22 @@ function handleAddTask(e) {
 
   const existingTask = tasks.find(task => task.id === editingTaskId);
   const newTask = {
-<<<<<<< HEAD
-    id: editingTaskId || 'task_' + Date.now(),
-=======
-    id: existingTask?.id || 'task_' + crypto.randomUUID(),
->>>>>>> 22e414e8dfa5b7e61d2084a36fa37c4f8e56aea8
+    id: existingTask?.id || 'task_' + (window.crypto?.randomUUID ? crypto.randomUUID() : Date.now()),
     title: title,
     subject: subject,
     priority: priority,
     dueDate: dueDate,
     desc: desc,
-<<<<<<< HEAD
-    completed: false,
-    createdAt: editingTaskId ? (tasks.find(task => task.id === editingTaskId)?.createdAt || new Date().toISOString()) : new Date().toISOString()
+    completed: existingTask?.completed || false,
+    createdAt: existingTask?.createdAt || new Date().toISOString()
   };
 
-  if (editingTaskId) {
-    tasks = tasks.map(task => task.id === editingTaskId ? newTask : task);
-    showToast('Cập nhật nhiệm vụ thành công!', 'success');
-  } else {
-    tasks.unshift(newTask);
-    showToast('Thêm nhiệm vụ mới thành công!', 'success');
-  }
-  editingTaskId = null;
+  if (existingTask) tasks[tasks.indexOf(existingTask)] = newTask;
+  else tasks.unshift(newTask);
   saveTasks();
-  taskForm.reset();
-  customSubjectInput.disabled = true;
-  customSubjectGroup.classList.add('hidden');
-  cancelEditBtn.classList.add('hidden');
-  document.getElementById('btn-add-task').textContent = 'Lưu nhiệm vụ';
-  // Keep default priority to medium and reset min date
-  taskPrioritySelect.value = 'medium';
-  initDueDateMin();
-
+  resetTaskForm();
   renderTasks();
+  showToast(existingTask ? 'Cập nhật nhiệm vụ thành công!' : 'Thêm nhiệm vụ mới thành công!', 'success');
 }
 
 window.handleEditTask = function(taskId) {
@@ -610,52 +633,13 @@ window.handleEditTask = function(taskId) {
   customSubjectInput.value = knownSubject ? '' : task.subject;
   cancelEditBtn.classList.remove('hidden');
   document.getElementById('btn-add-task').textContent = 'Cập nhật nhiệm vụ';
+  initDueDateMin();
   taskTitleInput.focus();
 };
 
 function cancelTaskEdit() {
-  editingTaskId = null;
-  taskForm.reset();
-  customSubjectInput.disabled = true;
-  customSubjectGroup.classList.add('hidden');
-  cancelEditBtn.classList.add('hidden');
-  document.getElementById('btn-add-task').textContent = 'Lưu nhiệm vụ';
-  taskPrioritySelect.value = 'medium';
-=======
-    completed: existingTask?.completed || false,
-    createdAt: existingTask?.createdAt || new Date().toISOString()
-  };
-
-  if (existingTask) {
-    tasks[tasks.indexOf(existingTask)] = newTask;
-  } else {
-    tasks.unshift(newTask);
-  }
-  saveTasks();
   resetTaskForm();
-
-  renderTasks();
-  showToast(existingTask ? 'Cập nhật nhiệm vụ thành công!' : 'Thêm nhiệm vụ mới thành công!', 'success');
->>>>>>> 22e414e8dfa5b7e61d2084a36fa37c4f8e56aea8
 }
-
-window.handleEditTask = function(taskId) {
-  const task = tasks.find(item => item.id === taskId);
-  if (!task) return;
-  editingTaskId = task.id;
-  taskTitleInput.value = task.title;
-  taskSubjectSelect.value = task.subject;
-  taskPrioritySelect.value = task.priority;
-  taskDueDateInput.value = task.dueDate;
-  taskDescInput.value = task.desc;
-  taskFormHeading.textContent = 'Chỉnh sửa nhiệm vụ';
-  saveTaskBtn.textContent = 'Lưu thay đổi';
-  cancelEditBtn.classList.remove('hidden');
-  taskFormError.classList.add('hidden');
-  initDueDateMin();
-  document.getElementById('task-composer').classList.add('editing');
-  taskTitleInput.focus();
-};
 
 window.handleToggleTask = function(taskId) {
   const task = tasks.find(t => t.id === taskId);

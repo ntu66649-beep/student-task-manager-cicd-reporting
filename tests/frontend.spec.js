@@ -70,7 +70,7 @@ test('Overdue filter excludes completed tasks and updates progress when completi
   await expect(page.locator('#task-progress')).toHaveAttribute('value', '33');
   await page.getByTestId('select-filter-status').selectOption('overdue');
   await expect(page.getByTestId('task-item')).toHaveCount(1);
-  await expect(page.getByTestId('task-overdue')).toHaveText('Quá hạn');
+  await expect(page.getByTestId('task-due-state')).toContainText('Quá hạn');
   await page.getByTestId('btn-toggle-task').click();
   await expect(page.getByTestId('task-item')).toHaveCount(0);
   await expect(page.getByTestId('empty-state')).toBeVisible();

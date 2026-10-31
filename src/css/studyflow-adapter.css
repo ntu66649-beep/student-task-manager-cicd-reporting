@@ -1,0 +1,14 @@
+/* CI/CD: keep edit, theme, subjects, calendar, Allure and existing test hooks. */
+.app-sidebar.sf-sidebar { width: 223px; padding: 32px 22px 22px; }
+.app-content { margin-left: 223px; }
+.navbar { min-height: 78px; padding: 16px 35px; }
+.dashboard-main { padding: 32px 35px 28px; }
+.page-heading h1 { font-size: 30px; font-weight: 650; letter-spacing: -1px; }
+.welcome-panel,.admin-welcome { background: var(--sf-soft); border: 1px solid var(--sf-line); border-radius: 12px; color: var(--sf-ink); }
+.welcome-panel :is(h2,p),.admin-welcome :is(h2,p) { color: var(--sf-ink); }
+.progress-summary { border-radius: 12px; }
+.sf-sidebar .sidebar-subjects .subject-count { color: #c0b2ea; background: #302c50; }
+.task-title { font-size: 13px; font-weight: 600; }.task-desc { font-size: 11px; }
+@media(max-width:1190px) and (min-width:701px) { .app-sidebar.sf-sidebar { width: 200px; padding: 28px 16px 20px; }.sf-sidebar .sf-brand { font-size: 20px; }.app-content { margin-left: 200px; }.navbar { padding-left: 24px; padding-right: 24px; }.dashboard-main { padding: 26px 24px; } }
+@media(max-width:700px) { .app-sidebar.sf-sidebar { position: relative; width: 100%; padding: 18px 18px 10px; }.app-content { margin-left: 0; }.navbar { position: static; padding: 12px 18px; min-height: 55px; }.dashboard-main { padding: 24px 18px 20px; }.page-heading h1 { font-size: 27px; }.sf-sidebar :is(.workspace-label,.sidebar-subjects,.sidebar-note,.sidebar-footer) { display: none; }.side-nav { flex-direction: row; flex-wrap: wrap; gap: 5px; }.side-nav .nav-item { flex: 1; padding: 10px 7px; font-size: 10px; gap: 5px; }.nav-item .icon { width: 14px; }.nav-item .nav-count { display: none; } }
+@media(max-width:390px) { .app-sidebar.sf-sidebar { padding-left: 10px; padding-right: 10px; }.side-nav .nav-item .icon { display: none; }.dashboard-main { padding-left: 12px; padding-right: 12px; } }

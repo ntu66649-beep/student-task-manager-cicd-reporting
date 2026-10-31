@@ -255,3 +255,8 @@ Chi tiết xem tại tài liệu: [`TEAM_TASKS.md`](file:///TEAM_TASKS.md).
 - [Bảng phân chia công việc nhóm 4 thành viên (`TEAM_TASKS.md`)](file:///TEAM_TASKS.md)
 - [Hướng dẫn kịch bản thuyết trình và Demo bảo vệ đồ án (`DEMO_GUIDE.md`)](file:///DEMO_GUIDE.md)
 - [Báo cáo kết quả kiểm thử chính thức (`TEST_REPORT.md`)](file:///TEST_REPORT.md)
+
+
+## StudyFlow shared interface
+
+The login and workspace now use the common StudyFlow design across all seven projects. See [STUDYFLOW_SYNC.md](STUDYFLOW_SYNC.md) for the palette, preserved testing behavior, run instructions and verification limits.
